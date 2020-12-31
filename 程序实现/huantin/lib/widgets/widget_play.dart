@@ -19,14 +19,63 @@ class PlayWidget extends StatelessWidget {
       child: Consumer<PlaySongsModel>(builder: (context, model, child) {
         Widget child;
 
-        if (model.allSongs.isEmpty)
-          child = Text('暂无正在播放的歌曲');
+        //若当前无在播放的歌曲
+        if (model.allSongs.isEmpty) {
+          child = GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () {
+              //设置点击事件为空
+            },
+            child: Row(
+              children: <Widget>[
+                RoundImgWidget('images/logo.png', 80),
+                HEmptyView(10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Text("", style: commonTextStyle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,),
+                      Text("", style: common13TextStyle,),
+                    ],
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    if (model.curState == null) {
+                      model.play();
+                    } else {
+                      model.togglePlay();
+                    }
+                  },
+                  child: Image.asset(
+                    model.curState == AudioPlayerState.PLAYING
+                        ? 'images/pause.png'
+                        : 'images/play.png',
+                    width: ScreenUtil().setWidth(50),
+                  ),
+                ),
+                HEmptyView(15),
+                GestureDetector(
+                  onTap: () {},
+                  child: Image.asset(
+                    'images/list.png',
+                    width: ScreenUtil().setWidth(50),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+        //当前有在播放的歌曲
         else {
           Song curSong = model.curSong;
           child = GestureDetector(
             behavior: HitTestBehavior.translucent,
             onTap: () {
-//              NavigatorUtil.goPlaySongsPage(context);
+              NavigatorUtil.goPlaySongsPage(context);
             },
             child: Row(
               children: <Widget>[
@@ -42,7 +91,6 @@ class PlayWidget extends StatelessWidget {
                     ],
                   ),
                 ),
-
                 GestureDetector(
                   onTap: (){
                     if(model.curState == null){
@@ -60,7 +108,9 @@ class PlayWidget extends StatelessWidget {
                 ),
                 HEmptyView(15),
                 GestureDetector(
-                  onTap: (){},
+                  onTap: (){
+
+                  },
                   child: Image.asset(
                     'images/list.png',
                     width: ScreenUtil().setWidth(50),

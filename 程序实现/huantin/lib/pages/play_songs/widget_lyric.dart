@@ -32,9 +32,12 @@ class LyricWidget extends CustomPainter with ChangeNotifier {
     // 判断如果是在拖动状态下
     if (isDragging) {
       // 不能小于最开始的位置
+      //上极限为 _offsetY.abs() < lyricPaints[0].height + ScreenUtil().setWidth(30)，
       if (_offsetY.abs() < lyricPaints[0].height + ScreenUtil().setWidth(30)) {
         _offsetY = (lyricPaints[0].height + ScreenUtil().setWidth(30)) * -1;
-      } else if (_offsetY.abs() > (totalHeight + lyricPaints[0].height + ScreenUtil().setWidth(30))) {
+      }
+      //下极限为 _offsetY.abs() > (totalHeight + lyricPaints[0].height + ScreenUtil().setWidth(30))，
+      else if (_offsetY.abs() > (totalHeight + lyricPaints[0].height + ScreenUtil().setWidth(30))) {
         // 不能大于最大位置
         _offsetY = (totalHeight + lyricPaints[0].height + ScreenUtil().setWidth(30)) * -1;
       } else {
@@ -74,15 +77,18 @@ class LyricWidget extends CustomPainter with ChangeNotifier {
         // 画每一行歌词
         // 判断条件：当前循环的 i 是否等于查找出来的 index，如果等于那么则高亮显示，如果不是，则还是原来的颜色。
         if (curLine == i) {
-          // 如果是当前行
-          lyricPaints[i].text = TextSpan(text: lyric[i].lyric, style: commonWhiteTextStyle);
+          // 如果是当前行，显示高亮白色大字
+          lyricPaints[i].text = TextSpan(text: lyric[i].lyric, style: mWhiteBoldTextStyle);
           lyricPaints[i].layout();
-        } else if (isDragging &&
-            i == (_offsetY / (lyricPaints[0].height + ScreenUtil().setWidth(30))).abs().round() - 1) {
-          // 如果是拖动状态中的当前行
+        }
+        //因为总长度就是用每行的偏移量加起来的，最大的偏移量也就是这么多，所以用偏移量除以每行的偏移量就能得到当前拖动到的行。
+        //如果 i == 正在拖动中 && 用当前偏移量 / 每行的偏移量 得到的值的绝对值的四舍五入的值，那么就代表是当前拖动中的行。
+        else if (isDragging && i == (_offsetY / (lyricPaints[0].height + ScreenUtil().setWidth(30))).abs().round() - 1) {
+          // 如果是拖动状态中的当前行，显示浅白色70小字
           lyricPaints[i].text = TextSpan(text: lyric[i].lyric, style: commonWhite70TextStyle);
           lyricPaints[i].layout();
         } else {
+          //既不是当前行，也不是拖动状态中的当前行，显示灰色小字
           lyricPaints[i].text = TextSpan(text: lyric[i].lyric, style: commonGrayTextStyle);
           lyricPaints[i].layout();
         }
@@ -97,12 +103,21 @@ class LyricWidget extends CustomPainter with ChangeNotifier {
       lyric[i].offset = y;
     }
 
+    /*
+    1.拖拽时显示，不拖拽时不显示
+    2.拖拽到某一行改变颜色
+    3.显示拖拽到的那一行的起始时间
+    4.画时间线
+     */
     // 拖动状态下显示横线
     if (isDragging) {
+      //播放按钮使用的是 icon
       // 画 icon
       final icon = Icons.play_arrow;
+      //CustomPainter 中画 icon，使用 Paragraph：
       var builder = prefix0.ParagraphBuilder(prefix0.ParagraphStyle(
         fontFamily: icon.fontFamily,
+        //这里是把 icon 当做字体来设置的，设置大小使用 fontSize
         fontSize: ScreenUtil().setWidth(60),
       ))
         ..addText(String.fromCharCode(icon.codePoint));
@@ -123,12 +138,8 @@ class LyricWidget extends CustomPainter with ChangeNotifier {
               size.height / 2 - ScreenUtil().setWidth(30)),
           linePaint);
       // 画当前行的时间
-      dragLineTime = lyric[
-              (_offsetY / (lyricPaints[0].height + ScreenUtil().setWidth(30)))
-                      .abs()
-                      .round() -
-                  1]
-          .startTime.inMilliseconds;
+      //画个文字，算好偏移量
+      dragLineTime = lyric[(_offsetY / (lyricPaints[0].height + ScreenUtil().setWidth(30))).abs().round() - 1].startTime.inMilliseconds;
       draggingLineTimeTextPainter = TextPainter(
         text: TextSpan(
             text: DateUtil.formatDateMs(dragLineTime,

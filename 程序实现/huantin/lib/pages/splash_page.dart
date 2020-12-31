@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:huantin/application.dart';
 import 'package:huantin/model/song.dart';
 import 'package:huantin/model/user.dart';
+import 'package:huantin/provider/local_user_model.dart';
 import 'package:huantin/provider/play_list_model.dart';
 import 'package:huantin/provider/play_songs_model.dart';
 import 'package:huantin/provider/user_model.dart';
@@ -52,12 +53,20 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
     UserModel userModel = Provider.of<UserModel>(context);
     userModel.initUser();
     PlaySongsModel playSongsModel = Provider.of<PlaySongsModel>(context);
+
+    LocalUserModel localUserModel = Provider.of<LocalUserModel>(context);
+    //localUserModel.initLocalUser();
     // 判断是否有保存的歌曲列表
     if(Application.sp.containsKey('playing_songs')){
       List<String> songs = Application.sp.getStringList('playing_songs');
       playSongsModel.addSongs(songs.map((s) => Song.fromJson(FluroConvertUtils.string2map(s))).toList());
       int index = Application.sp.getInt('playing_index');
       playSongsModel.curIndex = index;
+    }
+    // 判断是否有听歌历史记录
+    if(Application.sp.containsKey('history_songs')){
+      List<String> songs = Application.sp.getStringList('history_songs');
+      playSongsModel.addHistorySongs(songs.map((s) => Song.fromJson(FluroConvertUtils.string2map(s))).toList());
     }
     if (userModel.user != null) {
       await NetUtils.refreshLogin(context).then((value){
@@ -66,6 +75,16 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
         }
       });
       Provider.of<PlayListModel>(context).user = userModel.user;
+    } else
+      NavigatorUtil.goHomePage(context);
+
+    if (localUserModel.localUser != null) {
+      await NetUtils.refreshLogin(context).then((value){
+        if(value.data != -1){
+          NavigatorUtil.goHomePage(context);
+        }
+      });
+      Provider.of<PlayListModel>(context).localUser = localUserModel.localUser;
     } else
       NavigatorUtil.goHomePage(context);
   }

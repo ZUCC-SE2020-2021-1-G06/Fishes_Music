@@ -39,6 +39,11 @@ class NavigatorUtil {
     _navigateTo(context, Routes.dailySongs);
   }
 
+  /// 最近播放（历史播放记录）
+  static void goHistorySongsPage(BuildContext context) {
+    _navigateTo(context, Routes.historySongs);
+  }
+
   /// 歌单详情
   static void goPlayListPage(BuildContext context, {@required Recommend data}) {
     _navigateTo(context, "${Routes.playList}?data=${FluroConvertUtils.object2string(data)}");
@@ -74,6 +79,36 @@ class NavigatorUtil {
       {@required CommentHead data}) {
     _navigateTo(context,
         "${Routes.comment}?data=${FluroConvertUtils.object2string(data)}");
+  }
+
+  /// 搜索页面
+  static void goSearchPage(BuildContext context) {
+    _navigateTo(context, Routes.search);
+  }
+
+  /// 本地账号登录页
+  static void goLoginLocalPage(BuildContext context) {
+    _navigateTo(context, Routes.loginLocal, clearStack: true);
+  }
+
+  ///用户名登录页
+  static void goUsernameLoginPage(BuildContext context) {
+    _navigateTo(context, Routes.usernameLogin, clearStack: true);
+  }
+
+  ///注册页
+  static void goRegisterPage(BuildContext context) {
+    _navigateTo(context, Routes.register, clearStack: true);
+  }
+
+  ///用户反馈页
+  static void goFeedbackUserPage(BuildContext context) {
+    _navigateTo(context, Routes.feedbackUser, clearStack: true);
+  }
+
+  ///用户反馈列表页
+  static void goFeedbackListPage(BuildContext context) {
+    _navigateTo(context, Routes.feedbackList, clearStack: true);
   }
 
 }

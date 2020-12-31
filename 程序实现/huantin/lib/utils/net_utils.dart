@@ -6,11 +6,15 @@ import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:huantin/model/album.dart';
+import 'package:huantin/model/check.dart';
 import 'package:huantin/model/daily_songs.dart';
+import 'package:huantin/model/hot_search.dart';
+import 'package:huantin/model/hot_search_qq.dart';
 import 'package:huantin/model/lyric.dart';
 import 'package:huantin/model/mv.dart';
 import 'package:huantin/model/play_list.dart';
 import 'package:huantin/model/recommend.dart';
+import 'package:huantin/model/search_result.dart' hide User;
 import 'package:huantin/model/song_comment.dart' hide User;
 import 'package:huantin/model/song_detail.dart';
 import 'package:huantin/model/top_list.dart';
@@ -28,12 +32,13 @@ import '../application.dart';
 
 class NetUtils {
   static Dio _dio;
+  static Dio _dio2;
   static final String baseUrl = 'http://118.24.63.15';
-  //通过 InternetAddress.lookup('xxxx.com');获取状态判断是否有网络
-  static Future<List<InternetAddress>> _fm10s = InternetAddress.lookup("ws.acgvideo.com");
+  static final String baseUrl2 = 'http://121.196.105.48';
 
 //  初始化代码
   static void init() async {
+    //网易云
     Directory tempDir = await getTemporaryDirectory();
     String tempPath = tempDir.path;
     CookieJar cj = PersistCookieJar(dir: tempPath);
@@ -41,34 +46,13 @@ class NetUtils {
       ..interceptors.add(CookieManager(cj))
       ..interceptors.add(LogInterceptor(responseBody: true, requestBody: true));
 
-    // 海外華人可使用 nondanee/UnblockNeteaseMusic
-    (_dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
-        (client) {
-      client.findProxy = (uri) {
-        var host = uri.host;
-        if (host == 'music.163.com' ||
-            host == 'interface.music.163.com' ||
-            host == 'interface3.music.163.com' ||
-            host == 'apm.music.163.com' ||
-            host == 'apm3.music.163.com' ||
-            host == '59.111.181.60' ||
-            host == '223.252.199.66' ||
-            host == '223.252.199.67' ||
-            host == '59.111.160.195' ||
-            host == '59.111.160.197' ||
-            host == '59.111.181.38' ||
-            host == '193.112.159.225' ||
-            host == '118.24.63.156' ||
-            host == '59.111.181.35' ||
-            host == '39.105.63.80' ||
-            host == '47.100.127.239' ||
-            host == '103.126.92.133' ||
-            host == '103.126.92.132') {
-          return 'PROXY YOURPROXY;DIRECT';
-        }
-        return 'DIRECT';
-      };
-    };
+    //QQ音乐
+    Directory tempDir2 = await getTemporaryDirectory();
+    String tempPath2 = tempDir2.path;
+    CookieJar cj2 = PersistCookieJar(dir: tempPath2);
+    _dio2 = Dio(BaseOptions(baseUrl: '$baseUrl2:3300', followRedirects: false))
+      ..interceptors.add(CookieManager(cj2))
+      ..interceptors.add(LogInterceptor(responseBody: true, requestBody: true));
   }
 
 //  定义一个通用的网络请求
@@ -88,6 +72,34 @@ class NetUtils {
     if (isShowLoading) Loading.showLoading(context);
     try {
       return await _dio.get(url, queryParameters: params);
+    } on DioError catch (e) {
+      if (e == null) {
+        return Future.error(Response(data: -1));
+      } else if (e.response != null) {
+        if (e.response.statusCode >= 300 && e.response.statusCode < 400) {
+          _reLogin();
+          return Future.error(Response(data: -1));
+        } else {
+          return Future.value(e.response);
+        }
+      } else {
+        return Future.error(Response(data: -1));
+      }
+    } finally {
+      Loading.hideLoading(context);
+    }
+  }
+
+  //QQ音乐API的请求
+  static Future<Response> _get2(
+      BuildContext context,
+      String url, {
+        Map<String, dynamic> params,
+        bool isShowLoading = true,
+      }) async {
+    if (isShowLoading) Loading.showLoading(context);
+    try {
+      return await _dio2.get(url, queryParameters: params);
     } on DioError catch (e) {
       if (e == null) {
         return Future.error(Response(data: -1));
@@ -180,12 +192,8 @@ class NetUtils {
   未登录状态返回试听片段(返回字段包含被截取的正常歌曲的开始时间和结束时间)
    */
   static Future<String> getMusicURL(BuildContext context, id) async {
-//    var m10s = await _fm10s;
-//    final _random = new Random();
-//    var m10 = m10s[_random.nextInt(m10s.length)].address;
     var response = await _get(context, '/song/url?id=$id', isShowLoading: context != null);
-//    return response.data['data'][0]["url"].replaceFirst('m10.music.126.net', m10 + '/m10.music.126.net');
-    return response.data['data'][0]["url"].replaceFirst('m10.music.126.net', '/m10.music.126.net');
+    return response.data['data'][0]["url"];
   }
 
   /// 获取个人歌单（包括自建和收藏）
@@ -234,6 +242,17 @@ class NetUtils {
       '/recommend/songs',
     );
     return DailySongsData.fromJson(response.data);
+  }
+
+  /// 音乐是否可用
+  /// 说明: 调用此接口,传入歌曲 id, 可获取音乐是否可用
+  /// 返回 { success: true, message: 'ok' } 或者 { success: false, message: '亲爱的,暂无版权' }
+  static Future<Check> getCheck(
+      BuildContext context, {
+        Map<String, dynamic> params,
+      }) async {
+    var response = await _get(context, '/check/music', params: params);
+    return Check.fromJson(response.data);
   }
 
   /// 歌曲详情
@@ -289,7 +308,7 @@ class NetUtils {
     return LyricData.fromJson(response.data);
   }
 
-  /// 获取评论列表
+  /// 获取歌曲评论列表
   static Future<SongCommentData> getSongCommentData(
       BuildContext context, {
         @required Map<String, dynamic> params,
@@ -332,7 +351,7 @@ class NetUtils {
     return SongCommentData.fromJson(response.data);
   }
 
-  /// 获取评论列表
+  /// 网易云发送评论
   static Future<SongCommentData> sendComment(
       BuildContext context, {
         @required Map<String, dynamic> params,
@@ -340,6 +359,32 @@ class NetUtils {
     var response =
     await _get(context, '/comment', params: params, isShowLoading: true);
     return SongCommentData.fromJson(response.data);
+  }
+
+  /// 获取网易云热门搜索数据：热搜列表(详细)
+  static Future<HotSearchData> getHotSearchData(BuildContext context) async {
+    var response =
+    await _get(context, '/search/hot/detail', isShowLoading: false);
+    return HotSearchData.fromJson(response.data);
+  }
+
+  /// 获取QQ音乐热门搜索数据：热搜列表(简略)
+  static Future<HotSearchDataQQ> getHotSearchDataQQ(BuildContext context) async {
+    var response =
+    await _get2(context, '/search/hot', isShowLoading: false);
+    return HotSearchDataQQ.fromJson(response.data);
+  }
+
+  /// 综合搜索
+  /// type: 搜索类型；默认为 1 即单曲 , 取值意义 :
+  /// 1: 单曲, 10: 专辑, 100: 歌手, 1000: 歌单, 1002: 用户, 1004: MV, 1006: 歌词, 1009: 电台, 1014: 视频, 1018:综合
+  static Future<SearchMultipleData> searchMultiple(
+      BuildContext context, {
+        @required Map<String, dynamic> params,
+      }) async {
+    var response = await _get(context, '/search',
+        params: params, isShowLoading: false);
+    return SearchMultipleData.fromJson(response.data);
   }
 
 }

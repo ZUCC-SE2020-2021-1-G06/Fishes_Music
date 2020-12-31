@@ -5,11 +5,18 @@ import 'package:huantin/model/recommend.dart';
 import 'package:huantin/pages/bangding.dart';
 import 'package:huantin/pages/comment/comment_page.dart';
 import 'package:huantin/pages/daily_songs_page.dart';
+import 'package:huantin/pages/feedback/feedback_list_page.dart';
+import 'package:huantin/pages/feedback/feedback_user_page.dart';
 import 'package:huantin/pages/home/home_page.dart';
+import 'package:huantin/pages/home/my/history_songs_page.dart';
 import 'package:huantin/pages/home/my/my_page.dart';
+import 'package:huantin/pages/loginLocal/loginLocal_page.dart';
+import 'package:huantin/pages/loginLocal/register_page.dart';
+import 'package:huantin/pages/loginLocal/usernameLogin.dart';
 import 'package:huantin/pages/login_page.dart';
 import 'package:huantin/pages/play_list/play_list_page.dart';
 import 'package:huantin/pages/play_songs/play_songs_page.dart';
+import 'package:huantin/pages/search/search_page.dart';
 import 'package:huantin/pages/splash_page.dart';
 import 'package:huantin/pages/top_list_page.dart';
 import 'package:huantin/utils/fluro_convert_utils.dart';
@@ -47,6 +54,12 @@ var dailySongsHandler = new Handler(
       return DailySongsPage();
     });
 
+// 跳转到最近播放（历史播放记录）
+var historySongsHandler = new Handler(
+    handlerFunc: (BuildContext context, Map<String, List<Object>> params) {
+      return HistorySongsPage();
+    });
+
 // 跳转到排行榜页
 var topListHandler = new Handler(
     handlerFunc: (BuildContext context, Map<String, List<Object>> params) {
@@ -71,6 +84,37 @@ var commentHandler = new Handler(
     handlerFunc: (BuildContext context, Map<String, List<Object>> params) {
       String data = params['data'].first;
       return CommentPage(CommentHead.fromJson(FluroConvertUtils.string2map(data)));
+    });
+
+// 跳转到搜索页面
+var searchHandler = new Handler(
+    handlerFunc: (BuildContext context, Map<String, List<Object>> params) {
+      return SearchPage();
+    });
+//本地账号登录页
+var loginLocalHandler = new Handler(
+    handlerFunc: (BuildContext context, Map<String, List<Object>> params) {
+      return LoginLocalPage();
+    });
+//用户名登录页
+var usernameLoginHandler = new Handler(
+    handlerFunc: (BuildContext context, Map<String, List<Object>> params) {
+      return UsernameLoginPage();
+    });
+//设置登录密码页
+var registerHandler = new Handler(
+    handlerFunc: (BuildContext context, Map<String, List<Object>> params) {
+      return RegisterPage();
+    });
+//用户反馈页
+var feedbackUserHandler = new Handler(
+    handlerFunc: (BuildContext context, Map<String, List<Object>> params) {
+      return FeedbackUserPage();
+    });
+//用户反馈列表页
+var feedbackListHandler = new Handler(
+    handlerFunc: (BuildContext context, Map<String, List<Object>> params) {
+      return FeedbackListPage();
     });
 
 

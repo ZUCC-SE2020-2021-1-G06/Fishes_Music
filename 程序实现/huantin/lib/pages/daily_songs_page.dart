@@ -136,7 +136,7 @@ class _DailySongsPageState extends State<DailySongsPage> {
       index: index,
     );
 //    前往播放页面
-//    NavigatorUtil.goPlaySongsPage(context);
+    NavigatorUtil.goPlaySongsPage(context);
   }
 
   void setCount(int count) {

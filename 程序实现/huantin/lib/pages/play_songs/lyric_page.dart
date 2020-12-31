@@ -27,8 +27,8 @@ class _LyricPageState extends State<LyricPage> with TickerProviderStateMixin {
   AnimationController _lyricOffsetYController;
   int curSongId;
   Timer dragEndTimer; // 拖动结束任务
-  Function dragEndFunc;
-  Duration dragEndDuration = Duration(milliseconds: 1000);
+  Function dragEndFunc; //定义拖动防抖方法
+  Duration dragEndDuration = Duration(milliseconds: 1000);  //定义拖动防抖延迟时间
 
   @override
   void initState() {
@@ -76,16 +76,19 @@ class _LyricPageState extends State<LyricPage> with TickerProviderStateMixin {
                 ),
               )
             : GestureDetector(
+              /*
+              让点击跳转播放时不跳转至歌曲封面页，解决办法为不走父组件的 onTap() 方法。
+              这里有一点，如果子组件有点击事件，并且父组件没有设置相对应的 behavior，那么事件是不会冒泡到父组件的。
+              如果是在拖动状态中，那么设置上点击事件，如果不是的话，设置为null
+              这也能解释我们上面给 isDragging 赋值的时候为什么会 setState() ，就是因为要设置这个点击事件。
+               */
                 onTapDown: _lyricWidget.isDragging
                     ? (e) {
                         if (e.localPosition.dx > 0 &&
                             e.localPosition.dx < ScreenUtil().setWidth(100) &&
-                            e.localPosition.dy >
-                                _lyricWidget.canvasSize.height / 2 -
-                                    ScreenUtil().setWidth(100) &&
-                            e.localPosition.dy <
-                                _lyricWidget.canvasSize.height / 2 +
-                                    ScreenUtil().setWidth(100)) {
+                            e.localPosition.dy > _lyricWidget.canvasSize.height / 2 - ScreenUtil().setWidth(100) &&
+                            e.localPosition.dy < _lyricWidget.canvasSize.height / 2 + ScreenUtil().setWidth(100)) {
+                          /// 跳转到固定时间
                           widget.model.seekPlay(_lyricWidget.dragLineTime);
                         }
                       }
@@ -134,7 +137,13 @@ class _LyricPageState extends State<LyricPage> with TickerProviderStateMixin {
               ));
   }
 
+// 通过查看网易云官方APP，拖动结束后大约一两秒钟的时间才会消失，
+// 这个时间差是为了给用户点击时间线上的播放按钮准备的。
   void cancelDragTimer() {
+    //1.首先判断该 Timer 是否为空
+    //2.如果不为空则判断是否在活跃状态
+    //3.如果都满足条件，则取消这个 Timer 的任务，并且置为空
+    //4.最后重新赋值任务
     if (dragEndTimer != null) {
       if (dragEndTimer.isActive) {
         dragEndTimer.cancel();
@@ -142,6 +151,7 @@ class _LyricPageState extends State<LyricPage> with TickerProviderStateMixin {
       }
     }
     dragEndTimer = Timer(dragEndDuration, dragEndFunc);
+    //这样就可以达到预期的结果：在最后一次拖动结束的一秒钟后，把时间线消失。
   }
 
   /// 开始下一行动画

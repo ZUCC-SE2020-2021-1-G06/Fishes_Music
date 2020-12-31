@@ -12,6 +12,7 @@ class PlayListAppBarWidget extends StatelessWidget {
   final Widget content;
   final String backgroundImg;
   final String title;
+  final String text; //播放全部、清除全部等文本
   final double sigma;
   final PlayModelCallback playOnTap;
   final int count;
@@ -24,6 +25,7 @@ class PlayListAppBarWidget extends StatelessWidget {
     this.sigma = 5,
     this.playOnTap,
     this.count,
+    this.text,
   });
 
   @override

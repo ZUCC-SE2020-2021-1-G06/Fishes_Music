@@ -136,7 +136,7 @@ class _PlaySongsPageState extends State<PlaySongsPage>
                                 child: Container(
                                   margin: EdgeInsets.only(top: ScreenUtil().setWidth(150)),
                                   child: RotationTransition(
-                                    turns: _controller,
+                                    turns: _controller, // 封面旋转控制器
                                     child: Stack(
                                       alignment: Alignment.center,
                                       children: <Widget>[
@@ -144,7 +144,7 @@ class _PlaySongsPageState extends State<PlaySongsPage>
                                           'images/bet.png',
                                           width: ScreenUtil().setWidth(550),
                                         ),
-                                        RoundImgWidget('${curSong.picUrl}?param=200y200', 370),
+                                        RoundImgWidget('${curSong.picUrl}?param=400y400', 370),
                                       ],
                                     ),
                                   ),
@@ -153,6 +153,17 @@ class _PlaySongsPageState extends State<PlaySongsPage>
                               Align(
                                 child: RotationTransition(
                                   turns: _stylusAnimation,
+                                  /*
+                                  定义 Alignment，注意：
+                                  Alignment 左上角的值为：Alignment(-1.0, -1.0)，
+                                  中心点的的值为：Alignment(0.0, 0.0)，
+                                  右下角的值为：Alignment(1.0, 1.0)；
+                                  Alignment 是从中心开始的坐标系，左和上为负数、右和下为正数。
+                                  控制唱针的中心是在左上角，所以肯定是负数，所以用 -1+。
+                                  指针旋转的位置大概在 45 * 45 的位置，原图的尺寸：263 * 504
+                                  而既然是从中心开始的，那么计算的时候要用45 * 2 / 宽（高）。
+                                  这样得到的值才是准确的。
+                                   */
                                   alignment: Alignment(
                                       -1 +
                                           (ScreenUtil().setWidth(45 * 2) /

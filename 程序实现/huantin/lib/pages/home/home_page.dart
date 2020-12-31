@@ -4,6 +4,7 @@ import 'package:huantin/provider/user_model.dart';
 import 'package:huantin/utils/navigator_util.dart';
 import 'package:huantin/widgets/common_text_style.dart';
 import 'package:huantin/widgets/v_empty_view.dart';
+import 'package:huantin/widgets/widget_play.dart';
 import 'package:huantin/widgets/widget_round_img.dart';
 import 'package:provider/provider.dart';
 import '../../application.dart';
@@ -73,7 +74,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             color: Colors.black87,
                           ),
                           onPressed: () {
-                            //NavigatorUtil.goSearchPage(context);
+                            NavigatorUtil.goSearchPage(context);
                           },
                         ),
                       ),
@@ -102,11 +103,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       ],
                     ),
                   ),
+                  PlayWidget(),
                 ],
               ),
               padding: EdgeInsets.only(
                   bottom:
-                      ScreenUtil().setWidth(80) + Application.bottomBarHeight),
+                      ScreenUtil().setWidth(0) + Application.bottomBarHeight),
             ),
           ],
         ),
@@ -148,6 +150,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ListTile(   //下部标题
                 leading: Icon(Icons.account_circle,size:36.0,color: Colors.black,),
                 title: Text("登录",style:mCommonTextStyle),
+                onTap:(){
+                  NavigatorUtil.goLoginLocalPage(context);
+                }
             ),
             ListTile(
               leading: Icon(Icons.add_to_home_screen,size:36.0,color: Colors.black,),
@@ -166,12 +171,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ),
             Divider(),
             ListTile(
-              leading: Icon(Icons.exit_to_app,size:36.0,color: Colors.black,),
-              title: Text("注册",style:commonTextStyle),
-            ),
-            ListTile(
               leading: Icon(Icons.help,size:36,color: Colors.black,),
               title: Text("反馈与建议",style:commonTextStyle),
+              onTap:() {
+                NavigatorUtil.goFeedbackListPage(context);
+              },
             ),
             ListTile(
               leading: Icon(Icons.info,size:36.0,color: Colors.black,),

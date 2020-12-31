@@ -2,6 +2,8 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:huantin/model/check.dart';
+import 'package:huantin/model/comment_head.dart';
 //import 'package:huantin/model/comment_head.dart';
 import 'package:huantin/model/music.dart';
 import 'package:huantin/model/play_list.dart';
@@ -13,6 +15,7 @@ import 'package:huantin/pages/play_list/play_list_desc_dialog.dart';
 import 'package:huantin/provider/play_songs_model.dart';
 import 'package:huantin/utils/navigator_util.dart';
 import 'package:huantin/utils/net_utils.dart';
+import 'package:huantin/utils/utils.dart';
 import 'package:huantin/widgets/common_text_style.dart';
 import 'package:huantin/widgets/h_empty_view.dart';
 import 'package:huantin/widgets/v_empty_view.dart';
@@ -168,14 +171,14 @@ class _PlayListPageState extends State<PlayListPage> {
                                 FooterTabWidget('images/icon_comment.png',
                                     '${_data == null ? "评论" : _data.commentCount}',
                                         () {
-//                                      NavigatorUtil.goCommentPage(context,
-//                                          data: CommentHead(
-//                                              _data.coverImgUrl,
-//                                              _data.name,
-//                                              _data.creator.nickname,
-//                                              _data.commentCount,
-//                                              _data.id,
-//                                              CommentType.playList.index));
+                                      NavigatorUtil.goCommentPage(context,
+                                          data: CommentHead(
+                                              _data.coverImgUrl,
+                                              _data.name,
+                                              _data.creator.nickname,
+                                              _data.commentCount,
+                                              _data.id,
+                                              CommentType.playList.index));
                                     }),
                                 FooterTabWidget(
                                     'images/icon_share.png',
@@ -215,7 +218,22 @@ class _PlayListPageState extends State<PlayListPage> {
                                 '${d.ar.map((a) => a.name).toList().join('/')} - ${d.al.name}',
                               ),
                               onTap: () {
-                                playSongs(model, index);
+                                //判断是否有版权，由于接口问题，暂时无法准确适用
+//                                NetUtils.getCheck(context,params: {'id': d.id}).then((value) => {
+//                                  if(value.success == true ){
+//                                    playSongs(model, index)
+//                                  }
+//                                  else{
+//                                    Utils.showToast(value.message)
+//                                  }
+//                                });
+                              //通过返回的url判断是否可以播放，准确性更高，但是暂时无法输出原因
+                                NetUtils.getMusicURL(null, d.id).then((value) => {
+                                    if(value == null){
+                                        Utils.showToast("暂时无法播放")
+                                    }
+                                    else playSongs(model, index)
+                                });
                               },
                             );
                           }, childCount: data.playlist.trackIds.length));
@@ -231,6 +249,7 @@ class _PlayListPageState extends State<PlayListPage> {
     );
   }
 
+  //正常播放
   void playSongs(PlaySongsModel model, int index) {
     model.playSongs(
       _data.tracks

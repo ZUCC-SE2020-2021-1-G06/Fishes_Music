@@ -28,7 +28,6 @@ class _MyPageState extends State<MyPage> with AutomaticKeepAliveClientMixin {
     '本地音乐': 'images/icon_music.png',
     '最近播放': 'images/icon_late_play.png',
     '下载管理': 'images/icon_download_black.png',
-    '我的收藏': 'images/icon_collect.png',
     '自建歌单': 'images/icon_broadcast.png',
   };
 
@@ -41,8 +40,8 @@ class _MyPageState extends State<MyPage> with AutomaticKeepAliveClientMixin {
   void initState() {
     super.initState();
     topMenuKeys = topMenuData.keys.toList();
-    WidgetsBinding.instance.addPostFrameCallback((d){
-      if(mounted) {
+    WidgetsBinding.instance.addPostFrameCallback((d) {
+      if (mounted) {
         _playListModel = Provider.of<PlayListModel>(context);
         _playListModel.getSelfPlaylistData(context);
       }
@@ -58,30 +57,45 @@ class _MyPageState extends State<MyPage> with AutomaticKeepAliveClientMixin {
       itemBuilder: (context, index) {
         var curKey = topMenuKeys[index];
         var curValue = topMenuData[topMenuKeys[index]];
-        return Container(
-          height: ScreenUtil().setWidth(110),
-          alignment: Alignment.center,
-          child: Row(
-            children: <Widget>[
-              Container(
-                width: ScreenUtil().setWidth(140),
-                child: Align(
-                  child: Image.asset(
-                    curValue,
-                    width: ScreenUtil().setWidth(100),
-                    fit: BoxFit.fitWidth,
+        return GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () {
+              switch (index) {
+                case 0:     //本地音乐
+                  break;
+                case 1:     //最近播放（历史播放记录）
+                  NavigatorUtil.goHistorySongsPage(context);
+                  break;
+                case 2:     //下载管理
+                  break;
+                case 3:     //自建歌单
+                  break;
+              }
+            },
+            child: Container(
+              height: ScreenUtil().setWidth(110),
+              alignment: Alignment.center,
+              child: Row(
+                children: <Widget>[
+                  Container(
+                    width: ScreenUtil().setWidth(140),
+                    child: Align(
+                      child: Image.asset(
+                        curValue,
+                        width: ScreenUtil().setWidth(100),
+                        fit: BoxFit.fitWidth,
+                      ),
+                    ),
                   ),
-                ),
+                  Expanded(
+                    child: Text(
+                      curKey,
+                      style: commonTextStyle,
+                    ),
+                  )
+                ],
               ),
-              Expanded(
-                child: Text(
-                  curKey,
-                  style: commonTextStyle,
-                ),
-              )
-            ],
-          ),
-        );
+            ));
       },
       separatorBuilder: (context, index) {
         return Container(
@@ -135,20 +149,23 @@ class _MyPageState extends State<MyPage> with AutomaticKeepAliveClientMixin {
                 ),
                 onPressed: () {
                   showModalBottomSheet<Playlist>(
-                      context: context,
-                      builder: (context) {
-                        return PlayListMenuWidget(curPlayList, _playListModel);
-                      },
-                      backgroundColor: Colors.transparent).then((v) {
-                      if (v != null) {
+                          context: context,
+                          builder: (context) {
+                            return PlayListMenuWidget(
+                                curPlayList, _playListModel);
+                          },
+                          backgroundColor: Colors.transparent)
+                      .then((v) {
+                    if (v != null) {
                       // 1 为删除
-                      if(v.type == 1) {
+                      if (v.type == 1) {
                         Utils.showToast('删除成功');
                         _playListModel.delPlayList(curPlayList);
                       }
-                      if(v.type == 2) {
+                      if (v.type == 2) {
                         Utils.showToast('修改成功');
-                        _playListModel.editPlayList(curPlayList,v.name,v.description);
+                        _playListModel.editPlayList(
+                            curPlayList, v.name, v.description);
                       }
                     }
                   });
@@ -202,20 +219,23 @@ class _MyPageState extends State<MyPage> with AutomaticKeepAliveClientMixin {
                 ),
                 onPressed: () {
                   showModalBottomSheet<Playlist>(
-                      context: context,
-                      builder: (context) {
-                        return PlayListMenuWidget(curPlayList, _playListModel);
-                      },
-                      backgroundColor: Colors.transparent).then((v) {
+                          context: context,
+                          builder: (context) {
+                            return PlayListMenuWidget(
+                                curPlayList, _playListModel);
+                          },
+                          backgroundColor: Colors.transparent)
+                      .then((v) {
                     if (v != null) {
                       // 1 为删除
-                      if(v.type == 1) {
+                      if (v.type == 1) {
                         Utils.showToast('删除成功');
                         _playListModel.delPlayList(curPlayList);
                       }
-                      if(v.type == 2) {
+                      if (v.type == 2) {
                         Utils.showToast('修改成功');
-                        _playListModel.editPlayList(curPlayList,v.name,v.description);
+                        _playListModel.editPlayList(
+                            curPlayList, v.name, v.description);
                       }
                     }
                   });
@@ -229,7 +249,6 @@ class _MyPageState extends State<MyPage> with AutomaticKeepAliveClientMixin {
   }
 
   Widget _realBuildPlayList() {
-
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -267,11 +286,14 @@ class _MyPageState extends State<MyPage> with AutomaticKeepAliveClientMixin {
           child: _buildCjPlayListItem(_playListModel.selfCreatePlayList),
         ),
         PlaylistTitle(
-          "收藏的歌单", _playListModel.collectPlayList.length, () {
+          "收藏的歌单",
+          _playListModel.collectPlayList.length,
+          () {
             setState(() {
               collectPlayListOffstage = !collectPlayListOffstage;
             });
-          }, () {},
+          },
+          () {},
         ),
         Offstage(
           offstage: collectPlayListOffstage,
@@ -292,14 +314,15 @@ class _MyPageState extends State<MyPage> with AutomaticKeepAliveClientMixin {
   /// 创建歌单
   void _createPlaylist(String name, bool isPrivate) async {
     NetUtils.createPlaylist(context,
-        //是否设置为隐私歌单，默认否，传'10'则设置成隐私歌单
-        params: {'name': name, 'privacy': isPrivate ? '10' : null})
+            //是否设置为隐私歌单，默认否，传'10'则设置成隐私歌单
+            params: {'name': name, 'privacy': isPrivate ? '10' : null})
         .catchError((e) {
       Utils.showToast('创建失败');
     }).then((result) {
       Utils.showToast('创建成功');
       Navigator.of(context).pop();
-      _playListModel.addPlayList(result.playlist..creator = _playListModel.selfCreatePlayList[0].creator);
+      _playListModel.addPlayList(result.playlist
+        ..creator = _playListModel.selfCreatePlayList[0].creator);
     });
   }
 
@@ -314,13 +337,11 @@ class _MyPageState extends State<MyPage> with AutomaticKeepAliveClientMixin {
             Consumer<UserModel>(
               builder: (_, model, __) {
                 var user = model.user;
-                if(user != null){
-                  return Column(
-                      children: <Widget>[
-                        RoundImgWidget(user.profile.avatarUrl, 140.w),
-                      ]
-                  );
-                }else{
+                if (user != null) {
+                  return Column(children: <Widget>[
+                    RoundImgWidget(user.profile.avatarUrl, 140.w),
+                  ]);
+                } else {
                   return CommonButton(
                     callback: () {
                       NavigatorUtil.goLoginPage(context);
@@ -339,17 +360,18 @@ class _MyPageState extends State<MyPage> with AutomaticKeepAliveClientMixin {
             Consumer<UserModel>(
               builder: (_, model, __) {
                 var user = model.user;
-                if(user != null){
+                if (user != null) {
                   if (_playListModel == null) {
                     return Container(
-                    height: ScreenUtil().setWidth(400),
-                    alignment: Alignment.center,
-                    child: CupertinoActivityIndicator(),
-                  );
+                      height: ScreenUtil().setWidth(400),
+                      alignment: Alignment.center,
+                      child: CupertinoActivityIndicator(),
+                    );
                   } else {
                     return _buildPlayList();
-                  };
-                }else{
+                  }
+                  ;
+                } else {
                   return Container();
                 }
               },

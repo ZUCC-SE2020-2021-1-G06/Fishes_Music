@@ -2,6 +2,7 @@ import 'package:common_utils/common_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:huantin/pages/splash_page.dart';
+import 'package:huantin/provider/local_user_model.dart';
 import 'package:huantin/provider/play_list_model.dart';
 import 'package:huantin/provider/play_songs_model.dart';
 import 'package:huantin/provider/user_model.dart';
@@ -20,18 +21,21 @@ void main() {
 //  AudioPlayer.logEnabled = true;
   Provider.debugCheckInvalidValueType = null;
   runApp(MultiProvider(
-      providers: [
+    providers: [
       ChangeNotifierProvider<UserModel>(
-      create: (_) => UserModel(),
+        create: (_) => UserModel(),
       ),
       ChangeNotifierProvider<PlaySongsModel>(
-      create: (_) => PlaySongsModel()..init(),
+        create: (_) => PlaySongsModel()..init(),
       ),
       ChangeNotifierProvider<PlayListModel>(
-      create: (_) => PlayListModel(),
+        create: (_) => PlayListModel(),
+      ),
+      ChangeNotifierProvider<LocalUserModel>(
+        create: (_) => LocalUserModel(),
       ),
     ],
-  child: MyApp(),
+    child: MyApp(),
   ));
 }
 
@@ -46,12 +50,9 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.light,
           primaryColor: Colors.white,
           splashColor: Colors.transparent,
-          tooltipTheme: TooltipThemeData(verticalOffset: -100000)
-      ),
+          tooltipTheme: TooltipThemeData(verticalOffset: -100000)),
       home: SplashPage(),
       onGenerateRoute: Application.router.generator,
     );
   }
 }
-
-

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:huantin/model/local_user.dart';
 import 'package:huantin/model/play_list.dart';
 import 'package:huantin/model/user.dart';
 import 'package:huantin/utils/net_utils.dart';
 
 class PlayListModel with ChangeNotifier {
   User user;
+  LocalUser localUser;
 
   List<Playlist> _selfCreatePlayList = []; // 我创建的歌单
   List<Playlist> _collectPlayList = []; // 收藏的歌单
