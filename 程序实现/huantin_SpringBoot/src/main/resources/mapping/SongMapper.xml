@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.g06.springboot.mapper.SongMapper">
+	<resultMap id="BaseResultMap" type="com.g06.springboot.entity.Song">
+		<result column="songListId" jdbcType="INTEGER" property="songListId"/>
+		<result column="songId" jdbcType="VARCHAR" property="songListId"/>
+		<result column="platform" jdbcType="VARCHAR" property="platform"/>
+	</resultMap>
+
+	<select id="checkSong" resultType="com.g06.springboot.entity.Song">
+		select * from listSong where songListId = #{songListId} and songId = #{songId} and platform = #{platformType}
+	</select>
+	
+	<insert id="addSong">
+		insert into listSong(songListId,songId,platform) values (#{songListId},#{songId},#{platform})
+	</insert>
+
+	<delete id="removeSong">
+		delete from listSong where songListId = #{songListId} and songId = #{songId}
+	</delete>
+
+</mapper>
