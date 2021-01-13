@@ -9,11 +9,11 @@
 	</resultMap>
 
 	<select id="loadAllFeedback" resultType="com.g06.springboot.entity.Feedback">
-		select u.username,f.suggestion,f.state from useraccount u,feedback f where u.userId = f.userId
+		select f.id,u.userId,u.username,f.suggestion,f.state from useraccount u,feedback f where u.userId = f.userId
 	</select>
 
 	<select id="loadFeedback" resultType="com.g06.springboot.entity.Feedback">
-		select u.username,f.suggestion,f.state from useraccount u,feedback f where u.userId = f.userId and u.userId = #{userId}
+		select f.userId, u.username,f.suggestion,f.state from useraccount u,feedback f where u.userId = f.userId and u.userId = #{userId}
 	</select>
 
 	<insert id="addFeedback">
@@ -25,7 +25,7 @@
 	</delete>
 
 	<update id="modifyFeedback">
-		update feedback set state = '已处理' where id = #{id}
+		update feedback set state = '已读' where id = #{id}
 	</update>
 
 

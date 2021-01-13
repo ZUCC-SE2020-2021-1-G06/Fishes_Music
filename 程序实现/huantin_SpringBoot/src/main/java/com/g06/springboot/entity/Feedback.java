@@ -5,17 +5,26 @@ package com.g06.springboot.entity;
  *@Date 2020/12/29 16:41
  */
 public class Feedback {
-	private String useId;
+	private int id;
+	private String userId;
 	private String username;
 	private String suggestion;
 	private String state;
 
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	public String getUseId() {
-		return useId;
+		return userId;
 	}
 
 	public void setUseId(String useId) {
-		this.useId = useId;
+		this.userId = useId;
 	}
 
 	public String getUsername() {

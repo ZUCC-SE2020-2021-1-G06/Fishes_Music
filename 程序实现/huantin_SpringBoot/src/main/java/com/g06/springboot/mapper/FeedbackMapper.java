@@ -46,5 +46,5 @@ public interface FeedbackMapper {
 	 * @param id:反馈Id
 	 * @return void
 	 **/
-	void modifyFeedBack(int id);
+	void modifyFeedback(int id);
 }

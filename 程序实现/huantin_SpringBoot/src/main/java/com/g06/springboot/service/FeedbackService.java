@@ -40,6 +40,6 @@ public class FeedbackService {
 	}
 
 	public void modifyFeedback(int id){
-		feedbackMapper.modifyFeedBack(id);
+		feedbackMapper.modifyFeedback(id);
 	}
 }

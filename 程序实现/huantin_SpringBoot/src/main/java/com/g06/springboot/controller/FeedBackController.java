@@ -36,19 +36,19 @@ public class FeedBackController {
 
 	@ResponseBody
 	@RequestMapping("/search")
-	public List<Feedback> loadAllFeedback(@RequestParam String username){
+	public List<Feedback> loadFeedback(@RequestParam String username){
 		return feedbackService.loadFeedback(username);
 	}
 
 	@ResponseBody
 	@RequestMapping("/modify")
-	public void modifyFeedback(int id){
+	public void modifyFeedback(@RequestParam int id){
 		feedbackService.modifyFeedback(id);
 	}
 
 	@ResponseBody
 	@RequestMapping("/remove")
-	public void removeFeedback(int id){
+	public void removeFeedback(@RequestParam int id){
 		feedbackService.removeFeedback(id);
 	}
 
