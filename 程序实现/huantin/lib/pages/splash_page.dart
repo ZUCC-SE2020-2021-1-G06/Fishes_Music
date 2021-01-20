@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:huantin/application.dart';
 import 'package:huantin/model/song.dart';
+import 'package:huantin/model/song_kuwo.dart';
+import 'package:huantin/model/song_qq.dart';
 import 'package:huantin/model/user.dart';
 import 'package:huantin/provider/local_user_model.dart';
 import 'package:huantin/provider/play_list_model.dart';
@@ -63,10 +65,39 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
       int index = Application.sp.getInt('playing_index');
       playSongsModel.curIndex = index;
     }
+    // 判断是否有保存的QQ歌曲列表
+    if(Application.sp.containsKey('playing_songsQQ')){
+      List<String> songQQ = Application.sp.getStringList('playing_songsQQ');
+      playSongsModel.addSongQQ(songQQ.map((s) => SongQQ.fromJson(FluroConvertUtils.string2map(s))).toList());
+      int indexQQ = Application.sp.getInt('playing_indexQQ');
+      playSongsModel.curIndexQQ = indexQQ;
+    }
+    // 判断是否有保存的酷我歌曲列表
+    if(Application.sp.containsKey('playing_songsKuwo')){
+      List<String> songKuwo = Application.sp.getStringList('playing_songsKuwo');
+      playSongsModel.addSongKuwo(songKuwo.map((s) => SongKuwo.fromJson(FluroConvertUtils.string2map(s))).toList());
+      int indexKuwo = Application.sp.getInt('playing_indexKuwo');
+      playSongsModel.curIndexKuwo = indexKuwo;
+    }
     // 判断是否有听歌历史记录
     if(Application.sp.containsKey('history_songs')){
       List<String> songs = Application.sp.getStringList('history_songs');
       playSongsModel.addHistorySongs(songs.map((s) => Song.fromJson(FluroConvertUtils.string2map(s))).toList());
+    }
+    // 判断是否有QQ听歌历史记录
+    if(Application.sp.containsKey('history_songQQ')){
+      List<String> songs = Application.sp.getStringList('history_songQQ');
+      playSongsModel.addHistorySongQQ(songs.map((s) => SongQQ.fromJson(FluroConvertUtils.string2map(s))).toList());
+    }
+    // 判断是否有酷我听歌历史记录
+    if(Application.sp.containsKey('history_songKuwo')){
+      List<String> songs = Application.sp.getStringList('history_songKuwo');
+      playSongsModel.addHistorySongKuwo(songs.map((s) => SongKuwo.fromJson(FluroConvertUtils.string2map(s))).toList());
+    }
+    // 判断上次听的平台
+    if(Application.sp.containsKey('playing_cur')){
+      int cur = Application.sp.getInt('playing_cur');
+      playSongsModel.cur = cur;
     }
     if (userModel.user != null) {
       await NetUtils.refreshLogin(context).then((value){

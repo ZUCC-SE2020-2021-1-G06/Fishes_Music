@@ -31,6 +31,15 @@ class _DailySongsPageState extends State<DailySongsPage> {
   double _expandedHeight = ScreenUtil().setWidth(340);
   int _count;
   DailySongsData data;
+  PlaySongsModel _playSongsModel;
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((d) {
+      if (mounted) {
+        _playSongsModel = Provider.of<PlaySongsModel>(context);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -129,6 +138,7 @@ class _DailySongsPageState extends State<DailySongsPage> {
     model.playSongs(
       data.recommend.map((r) => Song(
                 r.id,
+                0,
                 name: r.name,
                 picUrl: r.album.picUrl,
                 artists: '${r.artists.map((a) => a.name).toList().join('/')}',

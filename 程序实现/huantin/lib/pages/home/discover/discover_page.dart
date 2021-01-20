@@ -13,6 +13,7 @@ import 'package:huantin/widgets/v_empty_view.dart';
 import 'package:huantin/widgets/widget_banner.dart';
 import 'package:huantin/widgets/widget_future_builder.dart';
 import 'package:huantin/model/banner.dart' as prefix0;
+import 'package:huantin/model/banner2.dart' as prefix1;
 import 'package:huantin/widgets/widget_play_list.dart';
 
 class DiscoverPage extends StatefulWidget {
@@ -22,13 +23,24 @@ class DiscoverPage extends StatefulWidget {
 
 class _HomePrePageState extends State<DiscoverPage>
     with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
-  //  /// 构建轮播图
+  // 网易云构建轮播图
   Widget _buildBanner() {
     return CustomFutureBuilder<prefix0.Banner>(
       futureFunc: NetUtils.getBannerData,
       builder: (context, data) {
         return CustomBanner(
             data.banners.map((e) => '${e.pic}?param=540y210').toList());
+      },
+    );
+  }
+
+// 酷我构建轮播图
+  Widget _buildBanner2() {
+    return CustomFutureBuilder<prefix1.Banner>(
+      futureFunc: NetUtils.getBanner2Data,
+      builder: (context, data) {
+        return CustomBanner(
+            data.data.map((e) => '${e.pic}?param=540y210').toList());
       },
     );
   }
@@ -245,6 +257,7 @@ class _HomePrePageState extends State<DiscoverPage>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            VEmptyView(20),
             _buildBanner(),
             Padding(
               padding: EdgeInsets.symmetric(
@@ -256,7 +269,12 @@ class _HomePrePageState extends State<DiscoverPage>
                 children: <Widget>[
                   VEmptyView(40),
                   _buildHomeCategoryList(),
-                  VEmptyView(20),
+                  VEmptyView(40),
+                  Text(
+                    '酷我音乐推荐',
+                    style: commonTextStyle,
+                  ),
+                  _buildBanner2(),
                   Text(
                     '推荐歌单',
                     style: commonTextStyle,

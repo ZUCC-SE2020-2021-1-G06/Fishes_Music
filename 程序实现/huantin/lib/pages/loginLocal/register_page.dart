@@ -106,7 +106,7 @@ class __RegisterWidgetState extends State<_RegisterWidget> {
             key: _formKey,
             child: Column(children: <Widget>[
               Container(
-                width: 400.0,
+                width: ScreenUtil().setWidth(500),
                 alignment: Alignment.center,
                 child: TextFormField(
                   controller: _usernameController,
@@ -128,7 +128,7 @@ class __RegisterWidgetState extends State<_RegisterWidget> {
                 ),
               ),
               Container(
-                width: 400.0,
+                width: ScreenUtil().setWidth(500),
                 alignment: Alignment.center,
                 child: TextFormField(
                   controller: _passwordController,
@@ -152,7 +152,7 @@ class __RegisterWidgetState extends State<_RegisterWidget> {
                 ),
               ),
               Container(
-                width: 400.0,
+                width: ScreenUtil().setWidth(500),
                 alignment: Alignment.center,
                 child: TextFormField(
                   controller: _repwdController,
@@ -186,7 +186,7 @@ class __RegisterWidgetState extends State<_RegisterWidget> {
               alignment: Alignment.center,
               child: LoginButton(
                 content: "下一步",
-                width: 250.0,
+                width: ScreenUtil().setWidth(300),
                 callback: () async {
                   if ((_formKey.currentState as FormState).validate()) {
                     String username = _usernameController.text;

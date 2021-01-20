@@ -9,12 +9,15 @@ import 'package:huantin/model/album.dart';
 import 'package:huantin/model/check.dart';
 import 'package:huantin/model/daily_songs.dart';
 import 'package:huantin/model/hot_search.dart';
+import 'package:huantin/model/hot_search_kugou.dart';
 import 'package:huantin/model/hot_search_qq.dart';
 import 'package:huantin/model/lyric.dart';
 import 'package:huantin/model/mv.dart';
 import 'package:huantin/model/play_list.dart';
 import 'package:huantin/model/recommend.dart';
 import 'package:huantin/model/search_result.dart' hide User;
+import 'package:huantin/model/search_result_kuwo.dart';
+import 'package:huantin/model/search_result_qq.dart';
 import 'package:huantin/model/song_comment.dart' hide User;
 import 'package:huantin/model/song_detail.dart';
 import 'package:huantin/model/top_list.dart';
@@ -25,16 +28,23 @@ import 'package:huantin/widgets/loading.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:huantin/model/user.dart';
 import 'package:huantin/model/banner.dart' as mBanner;
+import 'package:huantin/model/banner2.dart' as nBanner;
 
 import "dart:math";
 import '../application.dart';
 
 
 class NetUtils {
-  static Dio _dio;
-  static Dio _dio2;
+  static Dio _dio;  //网易云
+  static Dio _dio2; //QQ音乐
+  static Dio _dio3; //酷我
+  static Dio _dio4; //酷狗
+  static Dio _dio5; //QQ音乐（音乐URL）
   static final String baseUrl = 'http://118.24.63.15';
   static final String baseUrl2 = 'http://121.196.105.48';
+  static final String baseUrl3 = 'http://121.196.105.48';
+  static final String baseUrl4 = 'http://mobilecdn.kugou.com';
+  static final String baseUrl5 = 'http://121.196.105.48';
 
 //  初始化代码
   static void init() async {
@@ -52,6 +62,30 @@ class NetUtils {
     CookieJar cj2 = PersistCookieJar(dir: tempPath2);
     _dio2 = Dio(BaseOptions(baseUrl: '$baseUrl2:3300', followRedirects: false))
       ..interceptors.add(CookieManager(cj2))
+      ..interceptors.add(LogInterceptor(responseBody: true, requestBody: true));
+
+    //酷我音乐
+    Directory tempDir3 = await getTemporaryDirectory();
+    String tempPath3 = tempDir3.path;
+    CookieJar cj3 = PersistCookieJar(dir: tempPath3);
+    _dio3 = Dio(BaseOptions(baseUrl: '$baseUrl3:3330', followRedirects: false))
+      ..interceptors.add(CookieManager(cj3))
+      ..interceptors.add(LogInterceptor(responseBody: true, requestBody: true));
+
+    //酷狗音乐(热搜）
+    Directory tempDir4 = await getTemporaryDirectory();
+    String tempPath4 = tempDir4.path;
+    CookieJar cj4 = PersistCookieJar(dir: tempPath4);
+    _dio4 = Dio(BaseOptions(baseUrl: '$baseUrl4', followRedirects: false))
+      ..interceptors.add(CookieManager(cj4))
+      ..interceptors.add(LogInterceptor(responseBody: true, requestBody: true));
+
+    //QQ音乐（音乐URL）
+    Directory tempDir5 = await getTemporaryDirectory();
+    String tempPath5 = tempDir5.path;
+    CookieJar cj5 = PersistCookieJar(dir: tempPath5);
+    _dio5 = Dio(BaseOptions(baseUrl: '$baseUrl5:3300', followRedirects: false))
+      ..interceptors.add(CookieManager(cj5))
       ..interceptors.add(LogInterceptor(responseBody: true, requestBody: true));
   }
 
@@ -118,6 +152,90 @@ class NetUtils {
     }
   }
 
+  //酷我音乐API的请求
+  static Future<Response> _get3(
+      BuildContext context,
+      String url, {
+        Map<String, dynamic> params,
+        bool isShowLoading = true,
+      }) async {
+    if (isShowLoading) Loading.showLoading(context);
+    try {
+      return await _dio3.get(url, queryParameters: params);
+    } on DioError catch (e) {
+      if (e == null) {
+        return Future.error(Response(data: -1));
+      } else if (e.response != null) {
+        if (e.response.statusCode >= 300 && e.response.statusCode < 400) {
+          _reLogin();
+          return Future.error(Response(data: -1));
+        } else {
+          return Future.value(e.response);
+        }
+      } else {
+        return Future.error(Response(data: -1));
+      }
+    } finally {
+      Loading.hideLoading(context);
+    }
+  }
+
+  //酷狗音乐API的请求
+  static Future<Response> _get4(
+      BuildContext context,
+      String url, {
+        Map<String, dynamic> params,
+        bool isShowLoading = true,
+      }) async {
+    if (isShowLoading) Loading.showLoading(context);
+    try {
+      return await _dio4.get(url, queryParameters: params);
+    } on DioError catch (e) {
+      if (e == null) {
+        return Future.error(Response(data: -1));
+      } else if (e.response != null) {
+        if (e.response.statusCode >= 300 && e.response.statusCode < 400) {
+          _reLogin();
+          return Future.error(Response(data: -1));
+        } else {
+          return Future.value(e.response);
+        }
+      } else {
+        return Future.error(Response(data: -1));
+      }
+    } finally {
+      Loading.hideLoading(context);
+    }
+  }
+
+  //QQ音乐（音乐URL）
+  static Future<Response> _get5(
+      BuildContext context,
+      String url, {
+        Map<String, dynamic> params,
+        bool isShowLoading = true,
+      }) async {
+    if (isShowLoading) Loading.showLoading(context);
+    try {
+      return await _dio5.get(url, queryParameters: params);
+    } on DioError catch (e) {
+      if (e == null) {
+        return Future.error(Response(data: -1));
+      } else if (e.response != null) {
+        if (e.response.statusCode >= 300 && e.response.statusCode < 400) {
+          _reLogin();
+          return Future.error(Response(data: -1));
+        } else {
+          return Future.value(e.response);
+        }
+      } else {
+        return Future.error(Response(data: -1));
+      }
+    } finally {
+      Loading.hideLoading(context);
+    }
+  }
+
   static void _reLogin() {
     Future.delayed(Duration(milliseconds: 200), () {
       Application.getIt<NavigateService>().popAndPushNamed(Routes.login);
@@ -132,7 +250,6 @@ class NetUtils {
       'phone': phone,
       'password': password,
     });
-
     return User.fromJson(response.data);
   }
 
@@ -148,10 +265,16 @@ class NetUtils {
     });
   }
 
-  // 首页 Banner
+  // 首页网易云Banner
   static Future<mBanner.Banner> getBannerData(BuildContext context) async {
     var response = await _get(context, '/banner', params: {'type': 1});
     return mBanner.Banner.fromJson(response.data);
+  }
+
+  // 首页酷我Banner
+  static Future<nBanner.Banner> getBanner2Data(BuildContext context) async {
+    var response = await _get3(context, '/banner', params: {'type': 1});
+    return nBanner.Banner.fromJson(response.data);
   }
 
   /// 推荐歌单
@@ -194,6 +317,18 @@ class NetUtils {
   static Future<String> getMusicURL(BuildContext context, id) async {
     var response = await _get(context, '/song/url?id=$id', isShowLoading: context != null);
     return response.data['data'][0]["url"];
+  }
+
+  //获取QQ音乐播放源
+  static Future<String> getMusicURL2(BuildContext context, id) async {
+    var response = await _get5(context, '/song/urls?id=$id', isShowLoading: context != null);
+    return response.data['data']['$id'];
+  }
+
+  //获取酷我音乐播放源
+  static Future<String> getMusicURL3(BuildContext context, id) async {
+    var response = await _get3(context, '/url?rid=$id', isShowLoading: context != null);
+    return response.data['url'];
   }
 
   /// 获取个人歌单（包括自建和收藏）
@@ -375,6 +510,13 @@ class NetUtils {
     return HotSearchDataQQ.fromJson(response.data);
   }
 
+  /// 获取酷狗音乐热门搜索数据：热搜列表(简略)
+  static Future<HotSearchDataKuGou> getHotSearchDataKugou(BuildContext context) async {
+    var response =
+    await _get4(context, '/api/v3/search/hot?format=json&plat=0&count=30', isShowLoading: false);
+    return HotSearchDataKuGou.fromJson(response.data);
+  }
+
   /// 综合搜索
   /// type: 搜索类型；默认为 1 即单曲 , 取值意义 :
   /// 1: 单曲, 10: 专辑, 100: 歌手, 1000: 歌单, 1002: 用户, 1004: MV, 1006: 歌词, 1009: 电台, 1014: 视频, 1018:综合
@@ -385,6 +527,24 @@ class NetUtils {
     var response = await _get(context, '/search',
         params: params, isShowLoading: false);
     return SearchMultipleData.fromJson(response.data);
+  }
+
+  static Future<SearchMultipleDataQQ> searchMultipleQQ(
+      BuildContext context, {
+        @required Map<String, dynamic> params,
+      }) async {
+    var response = await _get2(context, '/search',
+        params: params, isShowLoading: false);
+    return SearchMultipleDataQQ.fromJson(response.data);
+  }
+
+  static Future<SearchMultipleDataKuwo> searchMultipleKuwo(
+      BuildContext context, {
+        @required Map<String, dynamic> params,
+      }) async {
+    var response = await _get3(context, '/search/searchMusicBykeyWord',
+        params: params, isShowLoading: false);
+    return SearchMultipleDataKuwo.fromJson(response.data);
   }
 
 }

@@ -18,6 +18,8 @@ import 'package:huantin/utils/net_utils.dart';
 import 'package:huantin/utils/utils.dart';
 import 'package:huantin/widgets/login_button.dart';
 import 'package:huantin/widgets/v_empty_view.dart';
+import 'package:huantin/widgets/widget_feedback_admin_appbar.dart';
+import 'package:huantin/widgets/widget_feedback_admin_item.dart';
 import 'package:huantin/widgets/widget_feedback_appbar.dart';
 import 'package:huantin/widgets/widget_feedback_list_item.dart';
 import 'package:huantin/widgets/widget_music_list_item.dart';
@@ -29,12 +31,12 @@ import 'package:provider/provider.dart';
 
 
 
-class FeedbackListPage extends StatefulWidget {
+class FeedbackAdminPage extends StatefulWidget {
   @override
-  _FeedbackListPageState createState() => _FeedbackListPageState();
+  _FeedbackAdminPageState createState() => _FeedbackAdminPageState();
 }
 
-class _FeedbackListPageState extends State<FeedbackListPage> {
+class _FeedbackAdminPageState extends State<FeedbackAdminPage> {
   FeedbackModel _feedbackModel;
   double _expandedHeight = ScreenUtil().setWidth(340);
   int _count;
@@ -59,11 +61,11 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
           Padding(
             padding: EdgeInsets.only(
                 bottom:
-                    ScreenUtil().setWidth(80) + Application.bottomBarHeight),
+                ScreenUtil().setWidth(80) + Application.bottomBarHeight),
             child: CustomScrollView(
               slivers: <Widget>[
                 //背景图片
-                FeedbackAppBarWidget(
+                FeedbackAdminAppBarWidget(
                   backgroundImg: 'images/bg_feedback.jpg',
                   count: _count,
                   content: Column(
@@ -72,20 +74,20 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                       Spacer(),
                       Container(
                         padding:
-                            EdgeInsets.only(left: ScreenUtil().setWidth(40)),
+                        EdgeInsets.only(left: ScreenUtil().setWidth(40)),
                         margin:
-                            EdgeInsets.only(bottom: ScreenUtil().setWidth(5)),
+                        EdgeInsets.only(bottom: ScreenUtil().setWidth(5)),
                         //设置时间
                         child: RichText(
                           text: TextSpan(
                             children: [
                               TextSpan(
                                   text:
-                                      '${DateUtil.formatDate(DateTime.now(), format: 'dd')} ',
+                                  '${DateUtil.formatDate(DateTime.now(), format: 'dd')} ',
                                   style: TextStyle(fontSize: 30)),
                               TextSpan(
                                   text:
-                                      '/ ${DateUtil.formatDate(DateTime.now(), format: 'MM')}月',
+                                  '/ ${DateUtil.formatDate(DateTime.now(), format: 'MM')}月',
                                   style: TextStyle(fontSize: 16)),
                             ],
                           ),
@@ -93,52 +95,51 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                       ),
                       Container(
                         padding:
-                            EdgeInsets.only(left: ScreenUtil().setWidth(40)),
+                        EdgeInsets.only(left: ScreenUtil().setWidth(40)),
                         margin:
-                            EdgeInsets.only(bottom: ScreenUtil().setWidth(20)),
+                        EdgeInsets.only(bottom: ScreenUtil().setWidth(20)),
                         child: Text(
-                          '衷心感谢您的反馈与建议',
+                          '衷心感谢您对管理做出的贡献',
                           style: TextStyle(fontSize: 14, color: Colors.white70),
                         ),
                       ),
                     ],
                   ),
                   expandedHeight: _expandedHeight,
-                  title: '我的反馈',
+                  title: '反馈建议',
                 ),
 
                 Consumer2<FeedbackModel, LocalUserModel>(
                     builder: (context, model, model2, child) {
-                  var localUser = model2.localUser;
-                  if (localUser == null) {
-                    return SliverList(
-                        delegate: SliverChildBuilderDelegate((context, index) {
-                      return GestureDetector(
-                        child: Text(
-                          "请先登录",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Color(0xFF18E3B7),fontSize: 20),
-                        ),
-                        onTap:() {
-                          NavigatorUtil.goLoginLocalPage(context);
-                        },
-                      );
-                    }, childCount: 1));
-                  } else {
-                    model.loadFeedback(localUser.username);
-                    List<FeedbackLocal> feedbackList = model.load();
-                    setCount(feedbackList.length);
-                    return SliverList(
-                        delegate: SliverChildBuilderDelegate((context, index) {
-                      return WidgetFeedbackListItem(
-                        FeedbackLocal(
-                            index: index + 1,
-                            suggestion: feedbackList[index].suggestion,
-                            state: feedbackList[index].state),
-                      );
-                    }, childCount: feedbackList.length));
-                  }
-                })
+                      var localUser = model2.localUser;
+                      if (localUser == null) {
+                        return SliverList(
+                            delegate: SliverChildBuilderDelegate((context, index) {
+                              return LoginButton(
+                                callback: () {
+                                  NavigatorUtil.goLoginLocalPage(context);
+                                },
+                                content: "请先登录",
+                                fontSize: 22,
+                              );
+                            }, childCount: 1));
+                      } else {
+                        model.loadAllFeedback();
+                        List<FeedbackLocal> feedbackList = model.load();
+                        setCount(feedbackList.length);
+                        return SliverList(
+                            delegate: SliverChildBuilderDelegate((context, index) {
+                              return WidgetFeedbackAdminItem(
+                                FeedbackLocal(
+                                    index: index + 1,
+                                    id:feedbackList[index].id,
+                                    username:feedbackList[index].username,
+                                    suggestion: feedbackList[index].suggestion,
+                                    state: feedbackList[index].state),
+                              );
+                            }, childCount: feedbackList.length));
+                      }
+                    })
               ],
             ),
           ),

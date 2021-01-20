@@ -24,35 +24,19 @@ class FeedbackHeader extends StatelessWidget implements PreferredSizeWidget {
       child: Container(
         color: Colors.white,
         child: Consumer<FeedbackModel>(builder: (context, model, child) {
-          return InkWell(
-            onTap: (){
-              onTap(model);
-            },
+          return Container(
             child: SizedBox.fromSize(
               size: preferredSize,
               child: Row(
                 children: <Widget>[
-                  HEmptyView(20),
-                  Icon(
-                    Icons.delete,
-                    size: ScreenUtil().setWidth(50),
-                  ),
-                  HEmptyView(10),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 3.0),
-                    child: Text(
-                      "清除全部",
-                      style: mCommonTextStyle,
-                    ),
-                  ),
-                  HEmptyView(5),
+
                   Padding(
                     padding: const EdgeInsets.only(top: 3.0),
                     child: count == null
                         ? Container()
                         : Text(
-                      "(共$count条)",
-                      style: smallGrayTextStyle,
+                      "  共$count条 ",
+                      style: TextStyle(fontSize: 20),
                     ),
                   ),
                   Spacer(),

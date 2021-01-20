@@ -99,7 +99,7 @@ class __UsernameLoginWidgetState extends State<_UsernameLoginWidget> {
                 key: _formKey,
                 child: Column(children: <Widget>[
                   Container(
-                    width: 400.0,
+                    width: ScreenUtil().setWidth(500),
                     alignment: Alignment.center,
                     child: TextFormField(
                       controller: _usernameController,
@@ -120,7 +120,7 @@ class __UsernameLoginWidgetState extends State<_UsernameLoginWidget> {
                     ),
                   ),
                   Container(
-                    width: 400.0,
+                    width: ScreenUtil().setWidth(500),
                     alignment: Alignment.center,
                     child: TextFormField(
                       controller: _passwordController,
@@ -150,7 +150,7 @@ class __UsernameLoginWidgetState extends State<_UsernameLoginWidget> {
                   alignment: Alignment.center,
                   child: LoginButton(
                     content: "登录",
-                    width: 250.0,
+                    width: ScreenUtil().setWidth(300),
                     fontSize: 22,
                     callback: () async {
                       if ((_formKey.currentState as FormState).validate()) {

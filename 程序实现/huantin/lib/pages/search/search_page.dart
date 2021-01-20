@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:huantin/application.dart';
 import 'package:huantin/model/hot_search.dart';
+import 'package:huantin/model/hot_search_kugou.dart';
 import 'package:huantin/model/hot_search_qq.dart';
 import 'package:huantin/pages/search/search_multiple_result_page.dart';
 import 'package:huantin/pages/search/search_other_result_page.dart';
+import 'package:huantin/provider/play_songs_model.dart';
 import 'package:huantin/utils/net_utils.dart';
 import 'package:huantin/utils/utils.dart';
 import 'package:huantin/widgets/common_text_style.dart';
@@ -12,6 +14,7 @@ import 'package:huantin/widgets/h_empty_view.dart';
 import 'package:huantin/widgets/v_empty_view.dart';
 import 'package:huantin/widgets/widget_future_builder.dart';
 import 'package:huantin/widgets/widget_play.dart';
+import 'package:provider/provider.dart';
 
 class SearchPage extends StatefulWidget {
   @override
@@ -47,7 +50,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   TabController _searchingTabController;
   String searchText;
   String defaultSearch;//默认搜索内容
-
+  PlaySongsModel _playSongsModel;
 
   @override
   void initState() {
@@ -56,7 +59,11 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     historySearchList = Application.sp.getStringList("search_history") ?? [];
     _searchingTabKeys.addAll(_searchingTabMap.keys.toList());
     _searchingTabController = TabController(length: _searchingTabKeys.length, vsync: this);
-
+    WidgetsBinding.instance.addPostFrameCallback((d) {
+      if (mounted) {
+        _playSongsModel = Provider.of<PlaySongsModel>(context);
+      }
+    });
     //从热门搜索列表（详细）中获取默认搜索文本内容，设置为第一个；
     NetUtils.getHotSearchData(context).then((value) => {
       defaultSearch = value.data[0].searchWord
@@ -331,6 +338,87 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     );
   }
 
+  // 酷狗音乐热搜
+  Widget _buildKuGouHotSearch() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          '酷狗音乐热搜榜',
+          style: bold18TextStyle,
+        ),
+        VEmptyView(15),
+        CustomFutureBuilder<HotSearchDataKuGou>(
+          //热门搜索列表（简略）
+          futureFunc: NetUtils.getHotSearchDataKugou,
+          builder: (context, data) {
+            return ListView.builder(
+              itemBuilder: (context, index) {
+                var curData = data.data.info[index];
+                return GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: () {
+                    searchText = curData.keyword;
+                    _search();
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                        vertical: ScreenUtil().setWidth(10)),
+                    child: Row(
+                      children: <Widget>[
+                        //搜索序号显示：前三个热搜，数字显示红色，后续数字显示灰色
+                        Text(
+                          '${index + 1}',
+                          style: index < 3
+                              ? bold18RedTextStyle
+                              : bold18GrayTextStyle,
+                        ),
+                        HEmptyView(20),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Padding(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: ScreenUtil().setWidth(5)),
+                                child: Row(
+                                  children: <Widget>[
+                                    //搜索文字显示：前三个显示与后续
+                                    Text(
+                                      curData.keyword,
+                                      style: index < 3
+                                          ? w500_16TextStyle
+                                          : common16TextStyle,
+                                    ),
+                                    Spacer(),
+                                    Text(
+                                      //score中存储热度数据，
+                                      '',
+                                      style: common14GrayTextStyle,
+                                      textAlign: TextAlign.right,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+              itemCount: 6,    //全部显示使用data.data.length
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+            );
+          },
+        )
+      ],
+    );
+  }
+
 
   // 搜索
   void _search() {
@@ -364,6 +452,8 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         _buildHotSearch(),
         VEmptyView(20),
         _buildQQHotSearch(),
+//        VEmptyView(20),
+//        _buildKuGouHotSearch(),
       ],
     );
   }

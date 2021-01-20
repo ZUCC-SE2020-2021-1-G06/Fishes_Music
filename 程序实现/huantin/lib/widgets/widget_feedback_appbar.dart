@@ -1,9 +1,11 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:huantin/provider/local_user_model.dart';
+import 'package:huantin/utils/navigator_util.dart';
 import 'package:huantin/utils/utils.dart';
 import 'package:huantin/widgets/widget_feedback_header.dart';
-import 'package:huantin/widgets/widget_music_history_header.dart';
+import 'package:provider/provider.dart';
 
 import 'flexible_detail_bar.dart';
 
@@ -31,6 +33,22 @@ class FeedbackAppBarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
+      leading: IconButton(
+        icon: Icon(Icons.chevron_left),
+        iconSize: 40,
+        onPressed: () {
+          NavigatorUtil.goHomePage(context);
+        },
+      ),
+      actions: <Widget>[
+        IconButton(
+          icon: Icon(Icons.add),
+          iconSize: 40,
+          onPressed: (){
+            NavigatorUtil.goFeedbackUserPage(context);
+          },
+        )
+      ],
       centerTitle: true,
       expandedHeight: expandedHeight,
       pinned: true,

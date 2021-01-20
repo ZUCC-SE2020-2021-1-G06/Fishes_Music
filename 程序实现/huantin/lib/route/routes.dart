@@ -12,6 +12,8 @@ class Routes {
   static String topList = "/top_list";        //排行榜
   static String playList = "/play_list";      //歌单页
   static String playSongs = "/play_songs";    //音乐播放页
+  static String playSongsKuwo = "/play_songs_kuwo";    //酷我音乐播放页
+  static String playSongsQQ = "/play_songs_qq";    //QQ音乐播放页
   static String comment = "/comment";     //网易云歌曲评论页
   static String search = "/search";       //搜索页
   static String loginLocal = "/loginLocal"; //本地账号登录
@@ -19,6 +21,8 @@ class Routes {
   static String register= "/register"; //注册
   static String feedbackUser= "/feedbackUser"; //用户反馈
   static String feedbackList= "/feedbackList"; //用户反馈列表
+  static String feedbackAdmin= "/feedbackAdmin"; //管理员反馈列表
+  static String myList= "/myList"; //自建歌单
 
   static void configureRoutes(FluroRouter router) {
     router.notFoundHandler = new Handler(
@@ -42,6 +46,10 @@ class Routes {
     router.define(topList, handler: topListHandler);
     //音乐播放页
     router.define(playSongs, handler: playSongsHandler);
+    //酷我音乐播放页
+    router.define(playSongsKuwo, handler: playSongsKuwoHandler);
+    //QQ音乐播放页
+    router.define(playSongsQQ, handler: playSongsQQHandler);
     //网易云歌曲评论页
     router.define(comment, handler: commentHandler);
     //搜索页
@@ -58,5 +66,9 @@ class Routes {
     router.define(feedbackUser, handler: feedbackUserHandler);
     //用户反馈列表
     router.define(feedbackList, handler: feedbackListHandler);
+    //管理员反馈列表
+    router.define(feedbackAdmin, handler: feedbackAdminHandler);
+    //自建歌单
+    router.define(myList, handler: myListHandler);
   }
 }

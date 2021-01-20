@@ -81,7 +81,18 @@ class __FeedbackUserWidgetState extends State<_FeedbackUserWidget> {
           children: <Widget>[
             Consumer<LocalUserModel>(builder: (_, model, __){
               var localUser = model.localUser;
-                return Container(
+                if(localUser == null){
+                  return LoginButton(
+                    callback: () {
+                      NavigatorUtil.goLoginLocalPage(context);
+                    },
+                    content: "请先登录",
+                    fontSize: 22,
+                    width: ScreenUtil().setWidth(300),
+                  );
+                }
+                else{
+                  return Container(
                     child:Form(
                         key: _formKey,
                         child: Column(
@@ -116,11 +127,11 @@ class __FeedbackUserWidgetState extends State<_FeedbackUserWidget> {
                                 },
                               ),
                             ),
-                          VEmptyView(100),
-                          /*Container(
-                              child: Column(
-                                children: <Widget>[
-                                     LoginButton(
+                            VEmptyView(100),
+                            Container(
+                                child: Column(
+                                  children: <Widget>[
+                                    LoginButton(
                                       callback: () {
                                         if ((_formKey.currentState as FormState).validate()) {
                                           String suggestion = _suggestionController.text;
@@ -138,12 +149,14 @@ class __FeedbackUserWidgetState extends State<_FeedbackUserWidget> {
                                       fontSize: 22,
                                       width: 250,
                                     ),
-                                ],
-                              )
-                            ),*/
-                        ],)
+                                  ],
+                                )
+                            ),
+                          ],)
                     ),
-                );
+                  );
+                }
+
               }
         ),
           ]

@@ -42,7 +42,7 @@ class _SearchOtherResultPageState extends State<SearchOtherResultPage>
   List<Albums> _albumsData = []; // 专辑数据
   List<PlayLists> _playListData = []; // 歌单数据
   List<Users> _userListData = []; // 用户数据
-  List<Videos> _videosData = []; // 视频数据
+//  List<Videos> _videosData = []; // 视频数据
   EasyRefreshController _controller;
   int offset = 1;
 
@@ -169,6 +169,7 @@ class _SearchOtherResultPageState extends State<SearchOtherResultPage>
       data
           .map((r) => prefix0.Song(
                 r.id,
+                0,
                 name: r.name,
                 picUrl: r.album.picUrl.isEmpty
                     ? r.album.artist.img1v1Url

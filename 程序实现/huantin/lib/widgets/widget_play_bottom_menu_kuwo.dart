@@ -11,10 +11,10 @@ import 'package:huantin/widgets/widget_music_list_item.dart';
 import 'package:huantin/widgets/widget_songs_list.dart';
 import 'package:provider/provider.dart';
 
-class PlayBottomMenuWidget extends StatelessWidget {
+class PlayBottomMenuKuwoWidget extends StatelessWidget {
   final PlaySongsModel model;
 
-  PlayBottomMenuWidget(this.model);
+  PlayBottomMenuKuwoWidget(this.model);
 
   //判断播放模式
   String _type(int type) {
@@ -36,14 +36,14 @@ class PlayBottomMenuWidget extends StatelessWidget {
             _type(model.curType),
             80,
             onTap: () {
-              model.changeType();
+              Utils.showToast('呜呜呜Ծ‸Ծ，切换播放模式功能暂不可用！');
             },
           ),
           ImageMenuWidget(
             'images/icon_song_left.png',
             80,
             onTap: () {
-              model.prePlay();
+              Utils.showToast('呜呜呜Ծ‸Ծ，切换歌曲功能暂不可用！');
             },
           ),
           ImageMenuWidget(
@@ -59,7 +59,7 @@ class PlayBottomMenuWidget extends StatelessWidget {
             'images/icon_song_right.png',
             80,
             onTap: () {
-              model.nextPlay();
+              Utils.showToast('呜呜呜Ծ‸Ծ，切换歌曲功能暂不可用！');
             },
           ),
           ImageMenuWidget(

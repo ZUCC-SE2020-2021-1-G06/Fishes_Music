@@ -7,7 +7,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:huantin/application.dart';
 import 'package:huantin/model/daily_songs.dart';
 import 'package:huantin/model/music.dart';
+import 'package:huantin/model/myMusic.dart';
+import 'package:huantin/model/myMusicKuwo.dart';
+import 'package:huantin/model/myMusicQQ.dart';
 import 'package:huantin/model/song.dart';
+import 'package:huantin/model/song_qq.dart';
+import 'package:huantin/model/song_kuwo.dart';
 import 'package:huantin/provider/play_list_model.dart';
 import 'package:huantin/provider/play_songs_model.dart';
 import 'package:huantin/utils/navigator_util.dart';
@@ -15,6 +20,9 @@ import 'package:huantin/utils/net_utils.dart';
 import 'package:huantin/utils/utils.dart';
 import 'package:huantin/widgets/v_empty_view.dart';
 import 'package:huantin/widgets/widget_music_list_item.dart';
+import 'package:huantin/widgets/widget_music_myList_item.dart';
+import 'package:huantin/widgets/widget_music_myList_item_kuwo.dart';
+import 'package:huantin/widgets/widget_music_myList_item_qq.dart';
 import 'package:huantin/widgets/widget_play.dart';
 import 'package:huantin/widgets/widget_play_history_app_bar.dart';
 import 'package:huantin/widgets/widget_play_list_app_bar.dart';
@@ -104,29 +112,80 @@ class _HistorySongsPageState extends State<HistorySongsPage> {
                 ),
                 Consumer<PlaySongsModel>(builder: (context, model, child) {
                   List<Song> hs = model.getHistorySongs();
-                  setCount(hs.length);
+                  List<SongQQ> hsqq = model.getHistorySongQQ();
+                  List<SongKuwo> hskuwo = model.getHistorySongKuwo();
+                  setCount(hs.length + hsqq.length + hskuwo.length);
                   return SliverList(
-                      delegate: SliverChildBuilderDelegate((context, index) {
-                    return WidgetMusicListItem(
-                      MusicData(
-                        //设置mvid为1，放置播放按钮
-                        mvid: 1,
-                        index: index + 1,
-                        songName: hs[index].name,
-                        artists: hs[index].artists,
-                      ),
-                      onTap: () {
-                        //通过返回的url判断是否可以播放，准确性更高，但是暂时无法输出原因
-                        NetUtils.getMusicURL(null, hs[index].id)
-                            .then((value) => {
-                                  if (value == null)
-                                    {Utils.showToast("暂时无法播放")}
-                                  else
-                                    playSongs(model, hs[index])
-                                });
-                      },
-                    );
-                  }, childCount: hs.length));
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      if(index < hs.length){
+                        return WidgetMusicMyListItem(
+                          MyMusicData(
+                            //设置mvid为1，放置播放按钮
+                              mvid: 1,
+                              index: index + 1,
+                              songId:hs[index].id,
+                              songName: hs[index].name,
+                              artists: '网易云 - ' + hs[index].artists,
+                              picUrl: hs[index].picUrl
+                          ),
+                          onTap: () {
+                            //通过返回的url判断是否可以播放，准确性更高，但是暂时无法输出原因
+                            NetUtils.getMusicURL(null, hs[index].id)
+                                .then((value) => {
+                              if (value == null)
+                                {Utils.showToast("暂时无法播放")}
+                              else
+                                playSongs(model, hs[index])
+                            });
+                          },
+                        );}
+                      else if(index >= hs.length && index < (hsqq.length + hs.length)){
+                        return WidgetMusicMyListItemQQ(
+                          MyMusicDataQQ(
+                            //设置mvid为1，放置播放按钮
+                              mvid: 1,
+                              index: index + 1,
+                              songId:hsqq[index - hs.length].id,
+                              songName: hsqq[index - hs.length].name,
+                              artists: 'QQ音乐 - ' + hsqq[index - hs.length].artists,
+                              picUrl: hsqq[index - hs.length].picUrl
+                          ),
+                          onTap: () {
+                            //通过返回的url判断是否可以播放，准确性更高，但是暂时无法输出原因
+                            NetUtils.getMusicURL2(null, hsqq[index - hs.length].id)
+                                .then((value) => {
+                              if (value == null)
+                                {Utils.showToast("暂时无法播放")}
+                              else
+                                playSongQQ(model, hsqq[index - hs.length])
+                            });
+                          },
+                        );
+                      }else{
+                        return WidgetMusicMyListItemKuwo(
+                          MyMusicDataKuwo(
+                            //设置mvid为1，放置播放按钮
+                              mvid: 1,
+                              index: index + 1,
+                              songId:hskuwo[index - (hsqq.length + hs.length)].id,
+                              songName: hskuwo[index - (hsqq.length + hs.length)].name,
+                              artists: '酷我 - ' + hskuwo[index - (hsqq.length + hs.length)].artists,
+                              picUrl: hskuwo[index - (hsqq.length + hs.length)].picUrl
+                          ),
+                          onTap: () {
+                            //通过返回的url判断是否可以播放，准确性更高，但是暂时无法输出原因
+                            NetUtils.getMusicURL3(null, hskuwo[index - (hsqq.length + hs.length)].id)
+                                .then((value) => {
+                              if (value == null)
+                                {Utils.showToast("暂时无法播放")}
+                              else
+                                playSongKuwo(model, hskuwo[index - (hsqq.length + hs.length)])
+                            });
+                          },
+                        );
+                      }
+                    }, childCount: hs.length + hsqq.length + hskuwo.length),
+                  );
                 })
               ],
             ),
@@ -144,6 +203,22 @@ class _HistorySongsPageState extends State<HistorySongsPage> {
       song,
     );
     NavigatorUtil.goPlaySongsPage(context);
+  }
+
+  //正常播放
+  void playSongQQ(PlaySongsModel model, SongQQ song) {
+    model.playSongQQ(
+      song,
+    );
+    NavigatorUtil.goPlaySongsPageQQ(context);
+  }
+
+  //正常播放
+  void playSongKuwo(PlaySongsModel model, SongKuwo song) {
+    model.playSongKuwo(
+      song,
+    );
+    NavigatorUtil.goPlaySongsPageKuwo(context);
   }
 
   void setCount(int count) {

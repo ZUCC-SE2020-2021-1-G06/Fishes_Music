@@ -62,13 +62,16 @@ class _MyPageState extends State<MyPage> with AutomaticKeepAliveClientMixin {
             onTap: () {
               switch (index) {
                 case 0:     //本地音乐
+                  Utils.showToast('呜呜呜Ծ‸Ծ，本地音乐功能暂不可用！');
                   break;
                 case 1:     //最近播放（历史播放记录）
                   NavigatorUtil.goHistorySongsPage(context);
                   break;
                 case 2:     //下载管理
+                  Utils.showToast('呜呜呜Ծ‸Ծ，下载管理功能暂不可用！');
                   break;
                 case 3:     //自建歌单
+                  NavigatorUtil.goMyListPage(context);
                   break;
               }
             },
@@ -334,24 +337,6 @@ class _MyPageState extends State<MyPage> with AutomaticKeepAliveClientMixin {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            Consumer<UserModel>(
-              builder: (_, model, __) {
-                var user = model.user;
-                if (user != null) {
-                  return Column(children: <Widget>[
-                    RoundImgWidget(user.profile.avatarUrl, 140.w),
-                  ]);
-                } else {
-                  return CommonButton(
-                    callback: () {
-                      NavigatorUtil.goLoginPage(context);
-                    },
-                    content: '登录网易云音乐',
-                    width: double.infinity,
-                  );
-                }
-              },
-            ),
             _buildTopMenu(),
             Container(
               color: Color(0xfff5f5f5),

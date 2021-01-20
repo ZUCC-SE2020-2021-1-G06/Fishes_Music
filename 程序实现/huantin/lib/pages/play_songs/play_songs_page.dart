@@ -11,6 +11,7 @@ import 'package:huantin/model/song.dart';
 import 'package:huantin/model/song_comment.dart';
 import 'package:huantin/pages/comment/comment_type.dart';
 import 'package:huantin/pages/play_songs/widget_lyric.dart';
+import 'package:huantin/provider/local_user_model.dart';
 import 'package:huantin/provider/play_songs_model.dart';
 import 'package:huantin/utils/navigator_util.dart';
 import 'package:huantin/utils/net_utils.dart';
@@ -209,16 +210,37 @@ class _PlaySongsPageState extends State<PlaySongsPage>
       height: ScreenUtil().setWidth(100),
       child: Row(
         children: <Widget>[
-          ImageMenuWidget('images/icon_dislike.png', 80),
+          Consumer<LocalUserModel>(builder: (context, model2,  child) {
+            return  ImageMenuWidget(
+              'images/icon_dislike.png',
+              80,
+              onTap: (){
+                if(model2.localUser == null){
+                  Utils.showToast("请先登录");
+                }
+                else{
+                  model.checkList(model2.localUser.userId);
+                  if(model.check == 0){
+                    model.addList(model2.localUser.userId);
+                  }
+                  model.addMySong(context, model2.localUser.userId, model.curSong);
+                }
+              },
+            );
+            }),
           ImageMenuWidget(
             'images/icon_song_download.png',
             80,
-            onTap: () {},
+            onTap: () {
+              Utils.showToast('呜呜呜Ծ‸Ծ，下载功能暂不可用！');
+            },
           ),
           ImageMenuWidget(
             'images/bfc.png',
             80,
-            onTap: () {},
+            onTap: () {
+              Utils.showToast('呜呜呜Ծ‸Ծ，功能暂不可用！');
+            },
           ),
           Expanded(
             child: Align(

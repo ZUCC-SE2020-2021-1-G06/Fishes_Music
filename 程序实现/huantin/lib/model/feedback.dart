@@ -3,12 +3,15 @@ class FeedbackLocal{
   String _username;
   String _suggestion;
   String _state;
+  int index;
 
   FeedbackLocal({
+    index,
     id,
     username,
     suggestion,
     state}){
+    this.index = index;
     this._id = id;
     this._username = username;
     this._suggestion = suggestion;
@@ -49,10 +52,11 @@ class FeedbackLocal{
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this._id;
     data['username'] = this._username;
     data['suggestion'] = this._suggestion;
     data['state'] = this._state;
+
+    return data;
   }
 
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:huantin/model/recommend.dart';
 import 'package:huantin/model/top_list.dart';
+import 'package:huantin/provider/play_songs_model.dart';
 import 'package:huantin/utils/navigator_util.dart';
 import 'package:huantin/utils/net_utils.dart';
 import 'package:huantin/utils/utils.dart';
@@ -11,6 +12,7 @@ import 'package:huantin/widgets/rounded_net_image.dart';
 import 'package:huantin/widgets/v_empty_view.dart';
 import 'package:huantin/widgets/widget_future_builder.dart';
 import 'package:huantin/widgets/widget_play.dart';
+import 'package:provider/provider.dart';
 
 
 class TopListPage extends StatefulWidget {
@@ -19,6 +21,16 @@ class TopListPage extends StatefulWidget {
 }
 
 class _TopListPageState extends State<TopListPage> {
+  PlaySongsModel _playSongsModel;
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((d) {
+      if (mounted) {
+        _playSongsModel = Provider.of<PlaySongsModel>(context);
+      }
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

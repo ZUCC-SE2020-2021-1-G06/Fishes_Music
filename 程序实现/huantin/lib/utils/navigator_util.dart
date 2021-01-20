@@ -74,6 +74,16 @@ class NavigatorUtil {
     _navigateTo(context, Routes.playSongs);
   }
 
+  /// 播放酷我歌曲页面
+  static void goPlaySongsPageKuwo(BuildContext context) {
+    _navigateTo(context, Routes.playSongsKuwo);
+  }
+
+  /// 播放酷我歌曲页面
+  static void goPlaySongsPageQQ(BuildContext context) {
+    _navigateTo(context, Routes.playSongsQQ);
+  }
+
   /// 评论页面
   static void goCommentPage(BuildContext context,
       {@required CommentHead data}) {
@@ -109,6 +119,16 @@ class NavigatorUtil {
   ///用户反馈列表页
   static void goFeedbackListPage(BuildContext context) {
     _navigateTo(context, Routes.feedbackList, clearStack: true);
+  }
+
+  ///管理员反馈列表页
+  static void goFeedbackAdminPage(BuildContext context) {
+    _navigateTo(context, Routes.feedbackAdmin, clearStack: true);
+  }
+
+  ///自建歌单页
+  static void goMyListPage(BuildContext context) {
+    _navigateTo(context, Routes.myList, clearStack: true);
   }
 
 }

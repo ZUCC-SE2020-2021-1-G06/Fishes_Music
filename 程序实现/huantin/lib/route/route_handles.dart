@@ -5,10 +5,12 @@ import 'package:huantin/model/recommend.dart';
 import 'package:huantin/pages/bangding.dart';
 import 'package:huantin/pages/comment/comment_page.dart';
 import 'package:huantin/pages/daily_songs_page.dart';
+import 'package:huantin/pages/feedback/feedback_admin_page.dart';
 import 'package:huantin/pages/feedback/feedback_list_page.dart';
 import 'package:huantin/pages/feedback/feedback_user_page.dart';
 import 'package:huantin/pages/home/home_page.dart';
 import 'package:huantin/pages/home/my/history_songs_page.dart';
+import 'package:huantin/pages/home/my/myList_page.dart';
 import 'package:huantin/pages/home/my/my_page.dart';
 import 'package:huantin/pages/loginLocal/loginLocal_page.dart';
 import 'package:huantin/pages/loginLocal/register_page.dart';
@@ -16,6 +18,8 @@ import 'package:huantin/pages/loginLocal/usernameLogin.dart';
 import 'package:huantin/pages/login_page.dart';
 import 'package:huantin/pages/play_list/play_list_page.dart';
 import 'package:huantin/pages/play_songs/play_songs_page.dart';
+import 'package:huantin/pages/play_songs/play_songs_page_kuwo.dart';
+import 'package:huantin/pages/play_songs/play_songs_page_qq.dart';
 import 'package:huantin/pages/search/search_page.dart';
 import 'package:huantin/pages/splash_page.dart';
 import 'package:huantin/pages/top_list_page.dart';
@@ -79,6 +83,19 @@ var playSongsHandler = new Handler(
       return PlaySongsPage();
     });
 
+// 跳转到酷我播放歌曲
+var playSongsKuwoHandler = new Handler(
+    handlerFunc: (BuildContext context, Map<String, List<Object>> params) {
+      return PlaySongsPageKuwo();
+    });
+
+// 跳转到QQ播放歌曲
+var playSongsQQHandler = new Handler(
+    handlerFunc: (BuildContext context, Map<String, List<Object>> params) {
+      return PlaySongsPageQQ();
+    });
+
+
 // 跳转到评论
 var commentHandler = new Handler(
     handlerFunc: (BuildContext context, Map<String, List<Object>> params) {
@@ -115,6 +132,14 @@ var feedbackUserHandler = new Handler(
 var feedbackListHandler = new Handler(
     handlerFunc: (BuildContext context, Map<String, List<Object>> params) {
       return FeedbackListPage();
+    });
+var feedbackAdminHandler = new Handler(
+    handlerFunc: (BuildContext context, Map<String, List<Object>> params) {
+      return FeedbackAdminPage();
+    });
+var myListHandler = new Handler(
+    handlerFunc: (BuildContext context, Map<String, List<Object>> params) {
+      return MyListPage();
     });
 
 

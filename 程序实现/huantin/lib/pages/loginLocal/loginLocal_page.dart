@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:huantin/provider/local_user_model.dart';
 import 'package:huantin/utils/navigator_util.dart';
@@ -96,11 +94,11 @@ class __LoginLocalWidgetState extends State<_LoginLocalWidget> {
                   return LoginButton(
                     callback: () {
                       model.logout(context);
-                      NavigatorUtil.goUsernameLoginPage(context);
+                      NavigatorUtil.goLoginLocalPage(context);
                     },
                     content: "退出",
                     fontSize: 22,
-                    width: 250,
+                    width: ScreenUtil().setWidth(300),
                   );
                 } else {
                   return Container(
@@ -112,7 +110,7 @@ class __LoginLocalWidgetState extends State<_LoginLocalWidget> {
                           },
                           content: "登录",
                           fontSize: 22,
-                          width: 250,
+                          width: ScreenUtil().setWidth(300),
                         ),
                         VEmptyView(30),
                         LoginButton(
@@ -121,7 +119,7 @@ class __LoginLocalWidgetState extends State<_LoginLocalWidget> {
                           },
                           content: "注册",
                           fontSize: 22,
-                          width: 250,
+                          width: ScreenUtil().setWidth(300),
                         )
                       ],
                     ),

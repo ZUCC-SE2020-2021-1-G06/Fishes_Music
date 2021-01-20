@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:huantin/model/check.dart';
 import 'package:huantin/model/comment_head.dart';
+
 //import 'package:huantin/model/comment_head.dart';
 import 'package:huantin/model/music.dart';
 import 'package:huantin/model/play_list.dart';
@@ -42,6 +43,17 @@ class PlayListPage extends StatefulWidget {
 class _PlayListPageState extends State<PlayListPage> {
   double _expandedHeight = ScreenUtil().setWidth(630);
   Playlist _data;
+  PlaySongsModel _playSongsModel;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((d) {
+      if (mounted) {
+        _playSongsModel = Provider.of<PlaySongsModel>(context);
+      }
+    });
+  }
 
   /// 构建歌单简介
   Widget buildDescription() {
@@ -89,7 +101,9 @@ class _PlayListPageState extends State<PlayListPage> {
       body: Stack(
         children: <Widget>[
           Padding(
-            padding: EdgeInsets.only(bottom: ScreenUtil().setWidth(80) + Application.bottomBarHeight),
+            padding: EdgeInsets.only(
+                bottom:
+                    ScreenUtil().setWidth(80) + Application.bottomBarHeight),
             child: CustomScrollView(
               slivers: <Widget>[
                 PlayListAppBarWidget(
@@ -134,19 +148,21 @@ class _PlayListPageState extends State<PlayListPage> {
                                         _data == null
                                             ? Container()
                                             : RoundImgWidget(
-                                            '${_data.creator.avatarUrl}?param=50y50', 40),
+                                                '${_data.creator.avatarUrl}?param=50y50',
+                                                40),
                                         HEmptyView(5),
                                         Expanded(
                                           child: _data == null
                                               ? Container()
                                               : Text(
-                                            _data.creator.nickname,
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: commonWhite70TextStyle,
-                                          ),
+                                                  _data.creator.nickname,
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: commonWhite70TextStyle,
+                                                ),
                                         ),
-                                          //显示创建者右侧的箭头图标
+                                        //显示创建者右侧的箭头图标
 //                                        _data == null
 //                                            ? Container()
 //                                            : Icon(
@@ -164,30 +180,31 @@ class _PlayListPageState extends State<PlayListPage> {
                           ),
                           VEmptyView(15),
                           Container(
-                            margin: EdgeInsets.only(top: ScreenUtil().setWidth(12)),
+                            margin:
+                                EdgeInsets.only(top: ScreenUtil().setWidth(12)),
                             alignment: Alignment.center,
                             child: Row(
                               children: <Widget>[
                                 FooterTabWidget('images/icon_comment.png',
                                     '${_data == null ? "评论" : _data.commentCount}',
-                                        () {
-                                      NavigatorUtil.goCommentPage(context,
-                                          data: CommentHead(
-                                              _data.coverImgUrl,
-                                              _data.name,
-                                              _data.creator.nickname,
-                                              _data.commentCount,
-                                              _data.id,
-                                              CommentType.playList.index));
-                                    }),
+                                    () {
+                                  NavigatorUtil.goCommentPage(context,
+                                      data: CommentHead(
+                                          _data.coverImgUrl,
+                                          _data.name,
+                                          _data.creator.nickname,
+                                          _data.commentCount,
+                                          _data.id,
+                                          CommentType.playList.index));
+                                }),
                                 FooterTabWidget(
                                     'images/icon_share.png',
                                     '${_data == null ? "分享" : _data.shareCount}',
-                                        () {}),
+                                    () {}),
                                 FooterTabWidget(
                                     'images/icon_download.png', '下载', () {}),
-                                FooterTabWidget(
-                                    'images/icon_multi_select.png', '多选', () {}),
+                                FooterTabWidget('images/icon_multi_select.png',
+                                    '多选', () {}),
                               ],
                             ),
                           )
@@ -205,20 +222,22 @@ class _PlayListPageState extends State<PlayListPage> {
                   params: {'id': widget.data.id},
                   builder: (context, data) {
                     setData(data.playlist);
-                    return Consumer<PlaySongsModel>(builder: (context, model, child) {
+                    return Consumer<PlaySongsModel>(
+                        builder: (context, model, child) {
                       return SliverList(
-                          delegate: SliverChildBuilderDelegate((context, index) {
-                            var d = data.songs[index];
-                            return WidgetMusicListItem(
-                              MusicData(
-                                mvid: d.mv,
-                                index: index + 1,
-                                songName: d.name,
-                                artists:
+                          delegate:
+                              SliverChildBuilderDelegate((context, index) {
+                        var d = data.songs[index];
+                        return WidgetMusicListItem(
+                          MusicData(
+                            mvid: d.mv,
+                            index: index + 1,
+                            songName: d.name,
+                            artists:
                                 '${d.ar.map((a) => a.name).toList().join('/')} - ${d.al.name}',
-                              ),
-                              onTap: () {
-                                //判断是否有版权，由于接口问题，暂时无法准确适用
+                          ),
+                          onTap: () {
+                            //判断是否有版权，由于接口问题，暂时无法准确适用
 //                                NetUtils.getCheck(context,params: {'id': d.id}).then((value) => {
 //                                  if(value.success == true ){
 //                                    playSongs(model, index)
@@ -227,16 +246,16 @@ class _PlayListPageState extends State<PlayListPage> {
 //                                    Utils.showToast(value.message)
 //                                  }
 //                                });
-                              //通过返回的url判断是否可以播放，准确性更高，但是暂时无法输出原因
-                                NetUtils.getMusicURL(null, d.id).then((value) => {
-                                    if(value == null){
-                                        Utils.showToast("暂时无法播放")
-                                    }
-                                    else playSongs(model, index)
+                            //通过返回的url判断是否可以播放，准确性更高，但是暂时无法输出原因
+                            NetUtils.getMusicURL(null, d.id).then((value) => {
+                                  if (value == null)
+                                    {Utils.showToast("暂时无法播放")}
+                                  else
+                                    playSongs(model, index)
                                 });
-                              },
-                            );
-                          }, childCount: data.playlist.trackIds.length));
+                          },
+                        );
+                      }, childCount: data.playlist.trackIds.length));
                     });
                   },
                 ),
@@ -255,6 +274,7 @@ class _PlayListPageState extends State<PlayListPage> {
       _data.tracks
           .map((r) => Song(
                 r.id,
+                0,
                 name: r.name,
                 picUrl: r.al.picUrl,
                 artists: '${r.ar.map((a) => a.name).toList().join('/')}',

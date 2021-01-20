@@ -2,6 +2,7 @@ import 'package:common_utils/common_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:huantin/pages/splash_page.dart';
+import 'package:huantin/provider/feedback_model.dart';
 import 'package:huantin/provider/local_user_model.dart';
 import 'package:huantin/provider/play_list_model.dart';
 import 'package:huantin/provider/play_songs_model.dart';
@@ -33,6 +34,9 @@ void main() {
       ),
       ChangeNotifierProvider<LocalUserModel>(
         create: (_) => LocalUserModel(),
+      ),
+      ChangeNotifierProvider<FeedbackModel>(
+        create: (_) => FeedbackModel(),
       ),
     ],
     child: MyApp(),

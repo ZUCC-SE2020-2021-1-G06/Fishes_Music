@@ -1,23 +1,25 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:huantin/provider/local_user_model.dart';
 import 'package:huantin/utils/navigator_util.dart';
 import 'package:huantin/utils/utils.dart';
-import 'package:huantin/widgets/widget_music_history_header.dart';
+import 'package:huantin/widgets/widget_feedback_header.dart';
+import 'package:provider/provider.dart';
 
 import 'flexible_detail_bar.dart';
 
-class PlayHistoryAppBarWidget extends StatelessWidget {
+class FeedbackAdminAppBarWidget extends StatelessWidget {
   final double expandedHeight;
   final Widget content;
   final String backgroundImg;
   final String title;
   final String text; //播放全部、清除全部等文本
   final double sigma;
-  final PlayModelCallback playOnTap;
+  final FeedbackCallback playOnTap;
   final int count;
 
-  PlayHistoryAppBarWidget({
+  FeedbackAdminAppBarWidget({
     @required this.expandedHeight,
     @required this.content,
     @required this.title,
@@ -49,7 +51,7 @@ class PlayHistoryAppBarWidget extends StatelessWidget {
         style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
       ),
 //    实现滑上去的时候有一行还停留在上方，使用了SliverAppBar的bottom参数。
-      bottom: MusicHistoryListHeader(
+      bottom: FeedbackHeader(
         onTap: playOnTap,
         count: count,
       ),
